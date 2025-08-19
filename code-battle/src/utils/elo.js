@@ -1,0 +1,1 @@
+// Calculate new ELO score after battle.

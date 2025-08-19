@@ -1,0 +1,1 @@
+// Shows results of a finished battle.

@@ -1,0 +1,1 @@
+// Stores fixed values (API URLs, statuses, difficulty levels).
