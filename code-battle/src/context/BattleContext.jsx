@@ -1,0 +1,1 @@
+// Keeps track of current battle state (opponents, status, winner).
