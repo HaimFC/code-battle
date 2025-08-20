@@ -6,10 +6,12 @@ export default function HomePage() {
   const { activeUser } = useMockAuth();
 
   if (activeUser) {
-    const cards = [{ text: "Practice Mode" }, { text: "Battle Mode" }];
+    const cards = [
+      { text: "Practice Mode", to: "/practice-select" },
+      { text: "Battle Mode", to: "battle-select" },
+    ];
     return (
       <>
-        <p>Welcome {activeUser?.displayName}</p>
         <Cards cards={cards} />
       </>
     );
