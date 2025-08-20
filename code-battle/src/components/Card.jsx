@@ -1,10 +1,6 @@
-import { useNavigate } from "react-router";
-
-export default function Card({ text, to }) {
-  const navigate = useNavigate();
-
+export default function Card({ text, handleClick }) {
   return (
-    <p className="card" onClick={() => navigate(to)}>
+    <p className="card" onClick={() => handleClick(text)}>
       {text}
     </p>
   );
