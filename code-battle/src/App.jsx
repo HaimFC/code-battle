@@ -18,7 +18,11 @@ const links = {
     { to: "/leaderboard", text: "Leaderboard" },
     { to: "/help", text: "Help" },
   ],
-  user: [],
+  user: [
+    { to: "/", text: "Home" },
+    { to: "/leaderboard", text: "Leaderboard" },
+    { to: "/help", text: "Help" },
+  ],
 };
 
 function App() {
