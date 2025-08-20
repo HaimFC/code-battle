@@ -1,10 +1,12 @@
 import Card from "./Card";
 
-export default function Cards({ cards }) {
+export default function Cards({ cards, handleClick }) {
   return (
     <>
       {cards &&
-        cards?.map(({ text }, index) => <Card key={index} text={text} />)}
+        cards?.map(({ text }, index) => (
+          <Card key={index} text={text} handleClick={handleClick} />
+        ))}
     </>
   );
 }

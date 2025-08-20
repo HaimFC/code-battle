@@ -1,3 +1,7 @@
-export default function Card({ text }) {
-  return <p className="card">{text}</p>;
+export default function Card({ text, handleClick }) {
+  return (
+    <p className="card" onClick={() => handleClick(text)}>
+      {text}
+    </p>
+  );
 }
