@@ -1,11 +1,8 @@
 import { Link } from "react-router";
-
-function mockUseAuth() {
-  return { activeUser: null };
-}
+import { useMockAuth } from "../auth/AuthProvider";
 
 const Navigation = ({ links }) => {
-  const { activeUser } = mockUseAuth();
+  const { activeUser } = useMockAuth();
   const userOrGuest = activeUser ? "user" : "guest";
 
   return (
@@ -35,7 +32,7 @@ const Navigation = ({ links }) => {
           justifyContent: "flex-end",
         }}
       >
-        <p>Welcome {activeUser ?? "guest"}</p>
+        <p>Welcome {activeUser?.displayName ?? "guest"}</p>
       </div>
     </div>
   );
