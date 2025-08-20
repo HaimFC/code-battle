@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { useMockAuth } from "../auth/AuthProvider";
 
 const Navigation = ({ links }) => {
-  const { activeUser } = useMockAuth();
+  const { activeUser, handleLogout } = useMockAuth();
   const userOrGuest = activeUser ? "user" : "guest";
 
   return (
@@ -33,6 +33,7 @@ const Navigation = ({ links }) => {
         }}
       >
         <p>Welcome {activeUser?.displayName ?? "guest"}</p>
+        {activeUser && <button onClick={handleLogout}>Log Out</button>}
       </div>
     </div>
   );
