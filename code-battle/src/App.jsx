@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignupPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
+import HelpPage from "./pages/HelpPage";
 import Layout from "./components/Layout";
 import { useState } from "react";
 import { AuthProvider } from "./auth/AuthProvider";
@@ -15,6 +16,7 @@ const links = {
     { to: "/login", text: "Log in" },
     { to: "/signup", text: "Sign Up" },
     { to: "/leaderboard", text: "Leaderboard" },
+    { to: "/help", text: "Help" },
   ],
   user: [],
 };
@@ -32,6 +34,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignUpPage />} />
               <Route path="/leaderboard" element={<LeaderboardPage />} />
+              <Route path="/help" element={<HelpPage />} />
             </Routes>
           </Layout>
         )}
