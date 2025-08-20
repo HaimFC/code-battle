@@ -19,7 +19,7 @@ export function AuthProvider({ onAuthReady, children }) {
 
   const handleLogout = async () => {
     setActiveUser(null);
-    navigate("/login");
+    navigate("/");
   };
 
   return (
