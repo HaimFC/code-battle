@@ -1,11 +1,11 @@
 import Card from "./Card";
 
-export default function Cards({ cards }) {
+export default function Cards({ cards, handleClick }) {
   return (
     <>
       {cards &&
-        cards?.map(({ text, to }, index) => (
-          <Card key={index} text={text} to={to} />
+        cards?.map(({ text }, index) => (
+          <Card key={index} text={text} handleClick={handleClick} />
         ))}
     </>
   );
