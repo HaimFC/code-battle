@@ -2,17 +2,14 @@
 import { useMockAuth } from "../auth/AuthProvider";
 import Cards from "../components/Cards";
 
-export default function HomePage() {
+export default function HomePage({ handleSelectMode }) {
   const { activeUser } = useMockAuth();
 
   if (activeUser) {
-    const cards = [
-      { text: "Practice Mode", to: "/practice-select" },
-      { text: "Battle Mode", to: "battle-select" },
-    ];
+    const cards = [{ text: "Practice Mode" }, { text: "Battle Mode" }];
     return (
       <>
-        <Cards cards={cards} />
+        <Cards cards={cards} handleClick={handleSelectMode} />
       </>
     );
   }
