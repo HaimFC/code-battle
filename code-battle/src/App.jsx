@@ -9,6 +9,8 @@ import HelpPage from "./pages/HelpPage";
 import Layout from "./components/Layout";
 import { useState } from "react";
 import { AuthProvider } from "./auth/AuthProvider";
+import PracticeSelectPage from "./pages/PracticeSelectPage";
+import ProtectedRoute from "./auth/ProtectedRoute";
 
 const links = {
   guest: [
@@ -22,6 +24,7 @@ const links = {
     { to: "/", text: "Home" },
     { to: "/leaderboard", text: "Leaderboard" },
     { to: "/help", text: "Help" },
+    { to: "/practice-select", text: "Practice" },
   ],
 };
 
@@ -34,11 +37,21 @@ function App() {
         {isAuthReady && (
           <Layout links={links}>
             <Routes>
+              {/* Guest Routes */}
               <Route path="/" element={<HomePage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignUpPage />} />
               <Route path="/leaderboard" element={<LeaderboardPage />} />
               <Route path="/help" element={<HelpPage />} />
+              {/* User Routes */}
+              <Route
+                path="/practice-select"
+                element={
+                  <ProtectedRoute>
+                    <PracticeSelectPage />
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
           </Layout>
         )}
