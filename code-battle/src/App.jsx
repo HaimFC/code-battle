@@ -1,11 +1,12 @@
 // holds React Router setup and wraps everything with Context Providers (Auth, Battle).
 import "./App.css";
-
 import { Route, Routes } from "react-router";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignupPage";
 import Layout from "./components/Layout";
+import { useState } from "react";
+import { AuthProvider } from "./auth/AuthProvider";
 
 const links = {
   guest: [
@@ -17,15 +18,21 @@ const links = {
 };
 
 function App() {
+  const [isAuthReady, setAuthReady] = useState(false);
+
   return (
     <>
-      <Layout links={links}>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-        </Routes>
-      </Layout>
+      <AuthProvider onAuthReady={() => setAuthReady(true)}>
+        {isAuthReady && (
+          <Layout links={links}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignUpPage />} />
+            </Routes>
+          </Layout>
+        )}
+      </AuthProvider>
     </>
   );
 }
