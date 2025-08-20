@@ -24,9 +24,10 @@ const links = {
     { to: "/", text: "Home" },
     { to: "/leaderboard", text: "Leaderboard" },
     { to: "/help", text: "Help" },
-    { to: "/practice-select", text: "Practice" },
+    { to: "/select-difficulty", text: "Difficulty" },
   ],
 };
+``;
 
 function App() {
   const navigate = useNavigate();
@@ -38,11 +39,11 @@ function App() {
 
   function handleSelectMode(mode) {
     if (mode === "Practice Mode") {
-      setMode("Practice Mode");
-      navigate("/practice-select");
-    } else if (text === "Battle Mode") {
-      // setMode("Battle Mode");
-      // navigate("battle-select");
+      setMode("Practice");
+      navigate("/select-difficulty");
+    } else if (mode === "Battle Mode") {
+      setMode("Battle");
+      navigate("select-difficulty");
     } else {
       console.log("error: returning home");
       navigate("/");
@@ -75,10 +76,11 @@ function App() {
               <Route path="/help" element={<HelpPage />} />
               {/* User Routes */}
               <Route
-                path="/practice-select"
+                path="/select-difficulty"
                 element={
                   <ProtectedRoute>
                     <SelectPage
+                      mode={mode}
                       setDifficulty={setDifficulty}
                       handleStartCoding={handleStartCoding}
                     />
