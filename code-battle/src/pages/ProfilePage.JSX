@@ -10,8 +10,8 @@ export default function ProfilePage() {
 
   useEffect(() => {
     async function getData() {
-      const data = await getProfile(activeUser);
-      setProfile(data);
+      const user = await getProfile(activeUser);
+      setProfile(user);
     }
     getData();
   }, []);
