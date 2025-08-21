@@ -15,20 +15,22 @@ export async function getMockOpponent(difficulty) {
   return { displayName: "alex", score: 650 };
 }
 
-const QUESTIONS = { Easy: 13, Medium: 10, Hard: 25 };
-
 async function getMockRandomQuestionByDifficulty(difficulty) {
-  return "two sum";
-}
-
-export async function postMockBattle(activeUser, opponent, difficulty) {
+  //  const QUESTIONS = { Easy: 13, Medium: 10, Hard: 25 };
   // if (!(difficulty in QUESTIONS)) {
   //   throw new Error("difficulty not found");
   // }
+  return "two sum";
+}
 
-  // const question = await getMockRandomQuestionByDifficulty();
-  // const post = { userA: activeUser, userB: opponent, question };
+export async function postMockBattle(activeUser, difficulty) {
+  const question = await getMockRandomQuestionByDifficulty(difficulty);
+  const post = { userA: activeUser, question };
   return 3;
+}
+
+export async function joinMockBattle(battleID) {
+  console.log("john joined the battle");
 }
 
 export async function getMockBattleByID(battleID) {
