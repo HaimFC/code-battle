@@ -1,9 +1,9 @@
 import Navigation from "./Navigation";
 
-const Layout = ({ links, hide, children }) => {
+const Layout = ({ links, children }) => {
   return (
     <>
-      <Navigation links={links} hide={hide} />
+      <Navigation links={links} />
       <main>{children}</main>
     </>
   );
