@@ -1,9 +1,10 @@
+import { HeaderSimple } from "./header/HeaderSimple";
 import Navigation from "./Navigation";
 
-const Layout = ({ links, children }) => {
+const Layout = ({ children }) => {
   return (
     <>
-      <Navigation links={links} />
+      <HeaderSimple />
       <main>{children}</main>
     </>
   );

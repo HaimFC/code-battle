@@ -9,6 +9,7 @@ import HelpPage from "./pages/HelpPage";
 import Layout from "./components/Layout";
 import { useState } from "react";
 import { AuthProvider } from "./auth/AuthProvider";
+import ProfilePage from "./pages/ProfilePage";
 import SelectPage from "./pages/SelectPage";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import WaitingRoomPage from "./pages/WaitingRoomPage";
@@ -19,24 +20,8 @@ import {
   forfeitMockBattle,
 } from "./utils/supabaseQueries";
 
-const links = {
-  guest: [
-    { to: "/", text: "Home" },
-    { to: "/login", text: "Log in" },
-    { to: "/signup", text: "Sign Up" },
-    { to: "/leaderboard", text: "Leaderboard" },
-    { to: "/help", text: "Help" },
-  ],
-  user: [
-    { to: "/", text: "Home" },
-    { to: "/leaderboard", text: "Leaderboard" },
-    { to: "/help", text: "Help" },
-  ],
-};
-
 function App() {
   const navigate = useNavigate();
-
   const [isAuthReady, setAuthReady] = useState(false);
   const [mode, setMode] = useState("Practice");
   const [difficulty, setDifficulty] = useState("Easy");
@@ -96,7 +81,7 @@ function App() {
     <>
       <AuthProvider onAuthReady={() => setAuthReady(true)}>
         {isAuthReady && (
-          <Layout links={links}>
+          <Layout>
             <Routes>
               {/* Guest Routes */}
               <Route
@@ -106,7 +91,6 @@ function App() {
                     handleSelectMode={handleSelectMode}
                     setMode={setMode}
                     mode={mode}
-                    difficulty={difficulty}
                   />
                 }
               />
@@ -115,6 +99,14 @@ function App() {
               <Route path="/leaderboard" element={<LeaderboardPage />} />
               <Route path="/help" element={<HelpPage />} />
               {/* User Routes */}
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/select-difficulty"
                 element={
