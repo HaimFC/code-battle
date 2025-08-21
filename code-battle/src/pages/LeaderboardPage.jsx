@@ -26,11 +26,11 @@ export default function LeaderboardPage() {
         </thead>
         <tbody>
           {leaderboard &&
-            leaderboard.map(({ displayName, elo }, index) => (
+            leaderboard.map(({ displayName, score }, index) => (
               <LeaderboardEntry
                 key={index}
                 displayName={displayName}
-                elo={elo}
+                score={score}
                 rank={index}
               />
             ))}
