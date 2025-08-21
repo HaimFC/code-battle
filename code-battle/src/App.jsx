@@ -95,6 +95,7 @@ function App() {
       throw new Error("user quit, but db thinks he is still available");
     }
     console.log("successfully forfeit the match");
+    setBattleID(null);
   }
 
   return (
