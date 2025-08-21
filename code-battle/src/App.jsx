@@ -1,6 +1,6 @@
 // holds React Router setup and wraps everything with Context Providers (Auth, Battle).
 import "./App.css";
-import { Route, Routes, useNavigate } from "react-router";
+import { Route, Routes, useNavigate, Navigate } from "react-router";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignupPage";
@@ -105,11 +105,13 @@ function App() {
                 path="/waiting-room"
                 element={
                   <ProtectedRoute>
+                    battleID ? (
                     <WaitingRoomPage
                       onOpponentFound={handleOpponentFound}
                       mode={mode}
                       difficulty={difficulty}
                     />
+                    ) : <Navigate replace to={"/"} />
                   </ProtectedRoute>
                 }
               />
