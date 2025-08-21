@@ -1,8 +1,8 @@
-export default function LeaderboardEntry({ displayName, elo, rank }) {
+export default function LeaderboardEntry({ displayName, score, rank }) {
   return (
     <tr>
       <td>{displayName}</td>
-      <td>{elo}</td>
+      <td>{score}</td>
       <td>{rank + 1}</td>
     </tr>
   );
