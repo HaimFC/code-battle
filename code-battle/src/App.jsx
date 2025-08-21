@@ -8,12 +8,16 @@ import LeaderboardPage from "./pages/LeaderboardPage";
 import HelpPage from "./pages/HelpPage";
 import Layout from "./components/Layout";
 import { useState } from "react";
-import { AuthProvider } from "./auth/AuthProvider";
+import { AuthProvider, useMockAuth } from "./auth/AuthProvider";
 import SelectPage from "./pages/SelectPage";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import WaitingRoomPage from "./pages/WaitingRoomPage";
 import CodeBattlePage from "./pages/CodeBattlePage";
-import { postMockBattle } from "./utils/supabaseQueries";
+import {
+  postMockBattle,
+  joinMockBattle,
+  forfeitMockBattle,
+} from "./utils/supabaseQueries";
 
 const links = {
   guest: [
@@ -53,11 +57,17 @@ function App() {
     }
   }
 
-  function handleStartCoding() {
+  async function handleStartCoding() {
     if (mode === "Practice") {
       navigate("/code-battle");
     } else if (mode === "Battle") {
-      navigate("/waiting-room");
+      const joinedBattle = await joinMockBattle(difficulty);
+      if (!joinedBattle) {
+        const battle = await postMockBattle(activeUser, difficulty);
+        setBattleID(battle);
+        navigate("/waiting-room");
+      }
+      navigate("/code-battle");
     }
   }
 
@@ -66,11 +76,20 @@ function App() {
   }
 
   async function handleOpponentFound(opponent) {
-    console.log("opponent found");
     setOpponent(opponent);
-    const battle = await postMockBattle();
-    setBattleID(battle);
+    if (opponent) {
+    }
+
     navigate("/code-battle");
+  }
+
+  async function handleForfeitBattle(activeUser) {
+    console.log(`${activeUser} forfeited the battle`);
+    const success = await forfeitMockBattle(activeUser, battleID);
+    if (!success) {
+      throw new Error("user quit, but db thinks he is still available");
+    }
+    console.log("successfully forfeit the match");
   }
 
   return (
@@ -108,7 +127,6 @@ function App() {
                     battleID ? (
                     <WaitingRoomPage
                       onOpponentFound={handleOpponentFound}
-                      mode={mode}
                       difficulty={difficulty}
                     />
                     ) : <Navigate replace to={"/"} />
@@ -123,6 +141,7 @@ function App() {
                       mode={mode}
                       battleID={battleID}
                       handleFinishCoding={handleFinishCoding}
+                      handleForfeitBattle={handleForfeitBattle}
                     />
                   </ProtectedRoute>
                 }
