@@ -25,8 +25,8 @@ export default function CodeBattlePage({
     <>
       {battleID ? "Code Battle!" : "Practice Coding"}
       {data && data?.question}
-      <button onClick={handleFinishCoding}>Submit</button>
-      <button onClick={handleForfeitBattle}>
+      <button onClick={() => handleFinishCoding(activeUser)}>Submit</button>
+      <button onClick={() => handleForfeitBattle(activeUser, battleID)}>
         {battleID ? "Forfeit Battle" : "Quit"}
       </button>
     </>
