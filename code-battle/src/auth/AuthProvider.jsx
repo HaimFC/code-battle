@@ -31,8 +31,24 @@ export function AuthProvider({ onAuthReady, children }) {
     navigate("/");
   };
 
+  const handleSignUp = async (email, password) => {
+    const isAlreadySignedUp = false;
+    if (isAlreadySignedUp) {
+      console.log("user already is signed up. logging in");
+      return await handleLogin(email, password);
+    }
+
+    const signUp = true;
+    if (!signUp) {
+      throw new Error("Cannot sign up user. fix this");
+    }
+    return await handleLogin(email, password);
+  };
+
   return (
-    <AuthContext value={{ activeUser, handleLogin, handleLogout }}>
+    <AuthContext
+      value={{ activeUser, handleLogin, handleLogout, handleSignUp }}
+    >
       {children}
     </AuthContext>
   );
