@@ -2,17 +2,17 @@ import { useMockAuth } from "../auth/AuthProvider";
 
 export async function getMockLeaderboard() {
   const data = [
-    { displayName: "john", elo: 1000 },
-    { displayName: "steve", elo: 900 },
-    { displayName: "madison", elo: 800 },
-    { displayName: "adam", elo: 700 },
-    { displayName: "bertrude", elo: 600 },
+    { displayName: "john", score: 1000 },
+    { displayName: "steve", score: 900 },
+    { displayName: "madison", score: 800 },
+    { displayName: "adam", score: 700 },
+    { displayName: "bertrude", score: 600 },
   ];
 
   return data;
 }
-export async function getOpponent(difficulty) {
-  return { displayName: "alex", elo: 650 };
+export async function getMockOpponent(difficulty) {
+  return { displayName: "alex", score: 650 };
 }
 
 const QUESTIONS = { Easy: 13, Medium: 10, Hard: 25 };
@@ -21,8 +21,7 @@ async function getMockRandomQuestionByDifficulty(difficulty) {
   return "two sum";
 }
 
-export async function postMockBattle(opponent, difficulty) {
-  // const { activeUser } = useMockAuth();
+export async function postMockBattle(activeUser, opponent, difficulty) {
   // if (!(difficulty in QUESTIONS)) {
   //   throw new Error("difficulty not found");
   // }
@@ -38,4 +37,13 @@ export async function getMockBattleByID(battleID) {
     userB: { displayName: "alex" },
     question: "two sum",
   };
+}
+
+export async function forfeitMockBattle(battleID) {
+  const success = true;
+  return success;
+}
+
+export async function updateMockScore(activeUser, points) {
+  return activeUser.score + points;
 }
