@@ -29,6 +29,9 @@ function App() {
   const [battleID, setBattleID] = useState(null);
 
   function handleSelectMode() {
+    if (battleID) {
+      navigate("/code-battle");
+    }
     if (mode === "Practice") {
       navigate("/select-difficulty");
     } else if (mode === "Battle") {
@@ -91,6 +94,7 @@ function App() {
                     handleSelectMode={handleSelectMode}
                     setMode={setMode}
                     mode={mode}
+                    battleID={battleID}
                   />
                 }
               />
@@ -120,19 +124,19 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="/waiting-room"
-                element={
-                  <ProtectedRoute>
-                    battleID ? (
-                    <WaitingRoomPage
-                      onOpponentFound={handleOpponentFound}
-                      difficulty={difficulty}
-                    />
-                    ) : <Navigate replace to={"/"} />
-                  </ProtectedRoute>
-                }
-              />
+              {battleID && (
+                <Route
+                  path="/waiting-room"
+                  element={
+                    <ProtectedRoute>
+                      <WaitingRoomPage
+                        onOpponentFound={handleOpponentFound}
+                        difficulty={difficulty}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+              )}
               <Route
                 path="/code-battle"
                 element={

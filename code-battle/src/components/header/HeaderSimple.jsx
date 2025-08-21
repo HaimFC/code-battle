@@ -2,15 +2,15 @@ import { useState } from "react";
 import { Container, Group, Button } from "@mantine/core";
 import classes from "./HeaderSimple.module.css";
 import { useMockAuth } from "../../auth/AuthProvider";
-import { NavLink } from "react-router";
+import { NavLink, useLocation } from "react-router";
 
 const links = {
   guest: [
     { to: "/", text: "Home" },
-    { to: "/login", text: "Log in" },
-    { to: "/signup", text: "Sign Up" },
     { to: "/leaderboard", text: "Leaderboard" },
     { to: "/help", text: "Help" },
+    { to: "/login", text: "Log in" },
+    { to: "/signup", text: "Sign Up" },
   ],
   user: [
     { to: "/", text: "Home" },
@@ -23,7 +23,11 @@ const links = {
 export function HeaderSimple() {
   const { activeUser, handleLogout } = useMockAuth();
   const userOrGuest = activeUser ? "user" : "guest";
-  const [active, setActive] = useState(links[userOrGuest].link);
+
+  const { pathname } = useLocation();
+  const override = !(pathname in links[userOrGuest]);
+
+  const [active, setActive] = useState(override ? "/" : pathname);
 
   const items = links[userOrGuest].map((link) => (
     <NavLink

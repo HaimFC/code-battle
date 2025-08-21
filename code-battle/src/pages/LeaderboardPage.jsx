@@ -16,7 +16,7 @@ export default function LeaderboardPage() {
   }, []);
 
   return (
-    <Table>
+    <Table bgcolor="white" className="rounded">
       <Table.Thead>
         <Table.Tr>
           <Table.Th>Name</Table.Th>
