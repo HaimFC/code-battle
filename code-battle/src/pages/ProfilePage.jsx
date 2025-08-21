@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useMockAuth } from "../auth/AuthProvider";
 import { getProfile } from "../utils/supabaseQueries";
-import { Text } from "@mantine/core";
+import { Text, Card } from "@mantine/core";
 
 export default function ProfilePage() {
   const { activeUser } = useMockAuth();
@@ -17,9 +17,9 @@ export default function ProfilePage() {
   }, []);
 
   return (
-    <>
+    <Card radius="10px">
       <Text>{activeUser.displayName}'s Profile</Text>
       {profile && <Text>Your score is: {profile.score}</Text>}
-    </>
+    </Card>
   );
 }
