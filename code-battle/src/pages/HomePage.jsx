@@ -14,7 +14,7 @@ export default function HomePage({
     const cards = [{ text: "Practice" }, { text: "Battle" }];
     return (
       <>
-        <Cards cards={cards} handleClick={setMode} />
+        <Cards cards={cards} handleClick={setMode} selected={mode} />
         <button onClick={handleSelectMode}>Submit</button>
         <p>Mode: {mode}</p>
         <p>Difficulty: {difficulty}</p>
