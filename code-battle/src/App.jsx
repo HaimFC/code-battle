@@ -96,6 +96,7 @@ function App() {
     }
     console.log("successfully forfeit the match");
     setBattleID(null);
+    navigate("/");
   }
 
   return (
