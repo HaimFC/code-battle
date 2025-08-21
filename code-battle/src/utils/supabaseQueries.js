@@ -54,3 +54,8 @@ export async function forfeitMockBattle(activeUser, battleID) {
 export async function updateMockScore(activeUser, points) {
   return activeUser.score + points;
 }
+
+export async function getProfile(activeUser) {
+  const data = { user_id: 1, displayName: "john", score: 9001 };
+  return data;
+}

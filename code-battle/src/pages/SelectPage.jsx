@@ -1,5 +1,6 @@
 import { useMockAuth } from "../auth/AuthProvider";
 import Cards from "../components/Cards";
+import { Button } from "@mantine/core";
 
 // Shows list of coding questions.
 export default function SelectPage({
@@ -16,7 +17,7 @@ export default function SelectPage({
       <p>{mode} Mode</p>
       <p>Select Difficulty</p>
       <Cards cards={cards} handleClick={setDifficulty} selected={difficulty} />
-      <button onClick={() => handleStartCoding(activeUser)}>{mode}</button>
+      <Button onClick={() => handleStartCoding(activeUser)}>{mode}</Button>
     </>
   );
 }

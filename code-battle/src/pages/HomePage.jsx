@@ -1,13 +1,9 @@
 // Landing page, intro, and navigation.
 import { useMockAuth } from "../auth/AuthProvider";
 import Cards from "../components/Cards";
+import { Button } from "@mantine/core";
 
-export default function HomePage({
-  handleSelectMode,
-  setMode,
-  mode,
-  difficulty,
-}) {
+export default function HomePage({ handleSelectMode, setMode, mode }) {
   const { activeUser } = useMockAuth();
 
   if (activeUser) {
@@ -15,9 +11,7 @@ export default function HomePage({
     return (
       <>
         <Cards cards={cards} handleClick={setMode} selected={mode} />
-        <button onClick={handleSelectMode}>Submit</button>
-        <p>Mode: {mode}</p>
-        <p>Difficulty: {difficulty}</p>
+        <Button onClick={handleSelectMode}>Submit</Button>
       </>
     );
   }
