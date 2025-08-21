@@ -20,7 +20,7 @@ export function AuthProvider({ onAuthReady, children }) {
   }, []);
 
   const handleLogin = async (email, password) => {
-    const mockUser = { id: 1, displayName: "john" };
+    const mockUser = { id: 1, displayName: "john", score: 0 };
     localStorage.setItem("activeUser", JSON.stringify(mockUser));
     setActiveUser(mockUser);
     navigate("/");
