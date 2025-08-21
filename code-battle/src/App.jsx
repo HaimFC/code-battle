@@ -33,7 +33,6 @@ const links = {
     { to: "/help", text: "Help" },
     { to: "/select-difficulty", text: "Difficulty" },
   ],
-  battle: [],
 };
 
 function App() {
