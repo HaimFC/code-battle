@@ -97,16 +97,24 @@ function App() {
     navigate("/");
   }
 
+  const hide = mode === "Battle";
+
   return (
     <>
       <AuthProvider onAuthReady={() => setAuthReady(true)}>
         {isAuthReady && (
-          <Layout links={links} hide={battleID}>
+          <Layout links={links} hide={hide}>
             <Routes>
               {/* Guest Routes */}
               <Route
                 path="/"
-                element={<HomePage handleSelectMode={handleSelectMode} />}
+                element={
+                  <HomePage
+                    handleSelectMode={handleSelectMode}
+                    mode={mode}
+                    difficulty={difficulty}
+                  />
+                }
               />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignUpPage />} />

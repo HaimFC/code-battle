@@ -8,6 +8,8 @@ export default function SelectPage({ mode, setDifficulty, handleStartCoding }) {
 
   return (
     <>
+      <p>{mode} Mode</p>
+      <p>Select Difficulty</p>
       <Cards cards={cards} handleClick={setDifficulty} />
       <button onClick={() => handleStartCoding(activeUser)}>{mode}</button>
     </>
