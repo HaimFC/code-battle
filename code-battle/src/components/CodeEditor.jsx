@@ -1,21 +1,18 @@
-// Editor where users write and run code (used in Practice & Battle)
-import { Textarea } from '@mantine/core';
+import Editor from "@monaco-editor/react";
 
-function CodeEditor({code, setCode}){
-    return (
-    <Textarea
-        placeholder="Enter your code here..."
-        value={code}
-        onChange={(event) => setCode(event.currentTarget.value)}
-        size="xl"
-        styles={{
-            input: {
-            height: 500,
-            fontSize: 18,
-            width: 500
-            },
-        }}
-        />
+function CodeEditor({ code, setCode }) {
+  return (
+    <Editor
+      defaultLanguage="javascript"
+      value={code}
+      onChange={(value) => setCode(value)}
+      theme="vs-dark"
+      options={{
+        fontSize: 16,
+        minimap: { enabled: false },
+        automaticLayout: true
+      }}
+    />
   );
 }
 
