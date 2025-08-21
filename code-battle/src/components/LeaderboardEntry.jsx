@@ -1,9 +1,11 @@
+import { Table } from "@mantine/core";
+
 export default function LeaderboardEntry({ displayName, score, rank }) {
   return (
-    <tr>
-      <td>{displayName}</td>
-      <td>{score}</td>
-      <td>{rank + 1}</td>
-    </tr>
+    <Table.Tr>
+      <Table.Td>{displayName}</Table.Td>
+      <Table.Td>{score}</Table.Td>
+      <Table.Td>{rank + 1}</Table.Td>
+    </Table.Tr>
   );
 }

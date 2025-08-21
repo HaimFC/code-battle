@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { getMockLeaderboard } from "../utils/supabaseQueries";
 import LeaderboardEntry from "../components/LeaderboardEntry";
+import { Table } from "@mantine/core";
 
 export default function LeaderboardPage() {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -15,27 +16,25 @@ export default function LeaderboardPage() {
   }, []);
 
   return (
-    <>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Rating</th>
-            <th>Rank</th>
-          </tr>
-        </thead>
-        <tbody>
-          {leaderboard &&
-            leaderboard.map(({ displayName, score }, index) => (
-              <LeaderboardEntry
-                key={index}
-                displayName={displayName}
-                score={score}
-                rank={index}
-              />
-            ))}
-        </tbody>
-      </table>
-    </>
+    <Table>
+      <Table.Thead>
+        <Table.Tr>
+          <Table.Th>Name</Table.Th>
+          <Table.Th>Rating</Table.Th>
+          <Table.Th>Rank</Table.Th>
+        </Table.Tr>
+      </Table.Thead>
+      <Table.Tbody>
+        {leaderboard &&
+          leaderboard.map(({ displayName, score }, index) => (
+            <LeaderboardEntry
+              key={index}
+              displayName={displayName}
+              score={score}
+              rank={index}
+            />
+          ))}
+      </Table.Tbody>
+    </Table>
   );
 }
