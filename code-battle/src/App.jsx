@@ -8,7 +8,7 @@ import LeaderboardPage from "./pages/LeaderboardPage";
 import HelpPage from "./pages/HelpPage";
 import Layout from "./components/Layout";
 import { useState } from "react";
-import { AuthProvider, useMockAuth } from "./auth/AuthProvider";
+import { AuthProvider } from "./auth/AuthProvider";
 import SelectPage from "./pages/SelectPage";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import WaitingRoomPage from "./pages/WaitingRoomPage";
@@ -57,7 +57,7 @@ function App() {
     }
   }
 
-  async function handleStartCoding() {
+  async function handleStartCoding(activeUser) {
     if (mode === "Practice") {
       navigate("/code-battle");
     } else if (mode === "Battle") {
@@ -66,6 +66,7 @@ function App() {
         const battle = await postMockBattle(activeUser, difficulty);
         setBattleID(battle);
         navigate("/waiting-room");
+        return;
       }
       navigate("/code-battle");
     }
@@ -83,8 +84,12 @@ function App() {
     navigate("/code-battle");
   }
 
-  async function handleForfeitBattle(activeUser) {
-    console.log(`${activeUser} forfeited the battle`);
+  async function handleForfeitBattle(activeUser, battleID) {
+    if (!battleID) {
+      navigate("/");
+      return;
+    }
+
     const success = await forfeitMockBattle(activeUser, battleID);
     if (!success) {
       throw new Error("user quit, but db thinks he is still available");
