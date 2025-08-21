@@ -1,17 +1,55 @@
-// Jonah
+import { useMockAuth } from "../auth/AuthProvider";
+import { Button, TextInput } from "@mantine/core";
+import { useForm } from "@mantine/form";
 
-// Signup form.
+// TODO: Use supabase handleLogin function
 
-function mockSignUp(user) {
-  console.log("signing up user");
-}
+// Login form (uses Supabase Auth).
+export default function LoginPage() {
+  const { handleSignUp } = useMockAuth();
 
-export default function SignUpPage() {
+  const form = useForm({
+    mode: "uncontrolled",
+    initialValues: {
+      email: "",
+      password: "",
+    },
+
+    validate: {
+      activeUser: (value) =>
+        /^[a-zA-Z].{1,}$/.test(value) ? null : "Invalid userName",
+    },
+    password: (value) =>
+      /^[a-zA-Z].{1,}$/.test(value) ? null : "Invalid password",
+  });
+
   return (
-    <>
-      <input type="text" placeholder="email" />
-      <input type="text" placeholder="password" />
-      <button onClick={mockSignUp}>Sign up</button>
-    </>
+    <form
+      style={{ display: "flex", marginTop: "0.25rem" }}
+      onSubmit={form.onSubmit((values) =>
+        handleSignUp(values.email, values.password)
+      )}
+    >
+      <TextInput
+        w={200}
+        withAsterisk
+        placeholder="Enter email"
+        key={form.key("email")}
+        {...form.getInputProps("email")}
+      />
+      <TextInput
+        w={200}
+        withAsterisk
+        placeholder="Enter password"
+        key={form.key("password")}
+        {...form.getInputProps("password")}
+      />
+      <Button
+        style={{ alignSelf: "flex-start", marginLeft: "0.1rem" }}
+        type="submit"
+      >
+        Submit
+      </Button>
+    </form>
   );
 }
