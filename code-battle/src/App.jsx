@@ -159,6 +159,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/*" element={<Navigate replace to="/" />} />
             </Routes>
           </Layout>
         )}
