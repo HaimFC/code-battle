@@ -43,13 +43,11 @@ function App() {
   const [opponent, setOpponent] = useState(null);
   const [battleID, setBattleID] = useState(null);
 
-  function handleSelectMode(mode) {
-    if (mode === "Practice Mode") {
-      setMode("Practice");
+  function handleSelectMode() {
+    if (mode === "Practice") {
       navigate("/select-difficulty");
-    } else if (mode === "Battle Mode") {
-      setMode("Battle");
-      navigate("select-difficulty");
+    } else if (mode === "Battle") {
+      navigate("/select-difficulty");
     } else {
       navigate("/");
     }
@@ -74,11 +72,8 @@ function App() {
     navigate("/summary");
   }
 
-  async function handleOpponentFound(opponent) {
-    setOpponent(opponent);
-    if (opponent) {
-    }
-
+  async function handleOpponentFound(foundOpponent) {
+    setOpponent(foundOpponent);
     navigate("/code-battle");
   }
 
@@ -97,13 +92,11 @@ function App() {
     navigate("/");
   }
 
-  const hide = mode === "Battle";
-
   return (
     <>
       <AuthProvider onAuthReady={() => setAuthReady(true)}>
         {isAuthReady && (
-          <Layout links={links} hide={hide}>
+          <Layout links={links}>
             <Routes>
               {/* Guest Routes */}
               <Route
@@ -111,6 +104,7 @@ function App() {
                 element={
                   <HomePage
                     handleSelectMode={handleSelectMode}
+                    setMode={setMode}
                     mode={mode}
                     difficulty={difficulty}
                   />
