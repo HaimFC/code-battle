@@ -122,6 +122,7 @@ function App() {
                     <SelectPage
                       mode={mode}
                       setDifficulty={setDifficulty}
+                      difficulty={difficulty}
                       handleStartCoding={handleStartCoding}
                     />
                   </ProtectedRoute>
