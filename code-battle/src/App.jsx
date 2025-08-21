@@ -11,6 +11,9 @@ import { useState } from "react";
 import { AuthProvider } from "./auth/AuthProvider";
 import SelectPage from "./pages/SelectPage";
 import ProtectedRoute from "./auth/ProtectedRoute";
+import WaitingRoomPage from "./pages/WaitingRoomPage";
+import CodeBattlePage from "./pages/CodeBattlePage";
+import { postMockBattle } from "./utils/supabaseQueries";
 
 const links = {
   guest: [
@@ -26,8 +29,8 @@ const links = {
     { to: "/help", text: "Help" },
     { to: "/select-difficulty", text: "Difficulty" },
   ],
+  battle: [],
 };
-``;
 
 function App() {
   const navigate = useNavigate();
@@ -35,7 +38,8 @@ function App() {
   const [isAuthReady, setAuthReady] = useState(false);
   const [mode, setMode] = useState("Practice");
   const [difficulty, setDifficulty] = useState("Easy");
-  const [start, setStart] = useState(false);
+  const [opponent, setOpponent] = useState(null);
+  const [battleID, setBattleID] = useState(null);
 
   function handleSelectMode(mode) {
     if (mode === "Practice Mode") {
@@ -45,25 +49,35 @@ function App() {
       setMode("Battle");
       navigate("select-difficulty");
     } else {
-      console.log("error: returning home");
       navigate("/");
     }
   }
 
   function handleStartCoding() {
-    setStart(true);
-    // navigate("/code-battle");
+    if (mode === "Practice") {
+      navigate("/code-battle");
+    } else if (mode === "Battle") {
+      navigate("/waiting-room");
+    }
   }
 
-  // function handleFinishCoding() {
-  //   setStart(false);
-  // }
+  function handleFinishCoding() {
+    navigate("/summary");
+  }
+
+  async function handleOpponentFound(opponent) {
+    console.log("opponent found");
+    setOpponent(opponent);
+    const battle = await postMockBattle();
+    setBattleID(battle);
+    navigate("/code-battle");
+  }
 
   return (
     <>
       <AuthProvider onAuthReady={() => setAuthReady(true)}>
         {isAuthReady && (
-          <Layout links={links}>
+          <Layout links={links} hide={battleID}>
             <Routes>
               {/* Guest Routes */}
               <Route
@@ -83,6 +97,30 @@ function App() {
                       mode={mode}
                       setDifficulty={setDifficulty}
                       handleStartCoding={handleStartCoding}
+                    />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/waiting-room"
+                element={
+                  <ProtectedRoute>
+                    <WaitingRoomPage
+                      onOpponentFound={handleOpponentFound}
+                      mode={mode}
+                      difficulty={difficulty}
+                    />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/code-battle"
+                element={
+                  <ProtectedRoute>
+                    <CodeBattlePage
+                      mode={mode}
+                      battleID={battleID}
+                      handleFinishCoding={handleFinishCoding}
                     />
                   </ProtectedRoute>
                 }
