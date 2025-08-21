@@ -43,4 +43,4 @@ function AuthProvider({ children }) {
   return ctx;
 }
 
-export default { useAuthContext, AuthProvider }
+export { useAuthContext, AuthProvider }
