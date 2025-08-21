@@ -1,27 +1,17 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
-import { getOpponent } from "../utils/supabaseQueries";
+import { getMockOpponent } from "../utils/supabaseQueries";
+import { useInterval } from "../hooks/useInterval";
 
 // waiting for opponent
-export default function WaitingRoomPage({ onOpponentFound, mode, difficulty }) {
-  useEffect(() => {
-    const interval = setInterval(() => {
-      async function getData() {
-        const opponent = await getOpponent(difficulty);
-        if (opponent && opponent.displayName) {
-          onOpponentFound(opponent);
-        }
+export default function WaitingRoomPage({ onOpponentFound, difficulty }) {
+  useInterval(() => {
+    async function getData() {
+      const opponent = await getMockOpponent(difficulty);
+      if (opponent && opponent.displayName) {
+        onOpponentFound(opponent);
       }
-      getData();
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  if (mode !== "Battle") {
-    const navigate = useNavigate();
-    navigate("/");
-  }
+    }
+    getData();
+  });
 
   return <>Waiting for Opponent</>;
 }

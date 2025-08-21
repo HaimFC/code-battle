@@ -2,34 +2,35 @@ import { useMockAuth } from "../auth/AuthProvider";
 
 export async function getMockLeaderboard() {
   const data = [
-    { displayName: "john", elo: 1000 },
-    { displayName: "steve", elo: 900 },
-    { displayName: "madison", elo: 800 },
-    { displayName: "adam", elo: 700 },
-    { displayName: "bertrude", elo: 600 },
+    { displayName: "john", score: 1000 },
+    { displayName: "steve", score: 900 },
+    { displayName: "madison", score: 800 },
+    { displayName: "adam", score: 700 },
+    { displayName: "bertrude", score: 600 },
   ];
 
   return data;
 }
-export async function getOpponent(difficulty) {
-  return { displayName: "alex", elo: 650 };
+export async function getMockOpponent(difficulty) {
+  return { displayName: "alex", score: 650 };
 }
-
-const QUESTIONS = { Easy: 13, Medium: 10, Hard: 25 };
 
 async function getMockRandomQuestionByDifficulty(difficulty) {
-  return "two sum";
-}
-
-export async function postMockBattle(opponent, difficulty) {
-  // const { activeUser } = useMockAuth();
+  //  const QUESTIONS = { Easy: 13, Medium: 10, Hard: 25 };
   // if (!(difficulty in QUESTIONS)) {
   //   throw new Error("difficulty not found");
   // }
+  return "two sum";
+}
 
-  // const question = await getMockRandomQuestionByDifficulty();
-  // const post = { userA: activeUser, userB: opponent, question };
+export async function postMockBattle(activeUser, difficulty) {
+  const question = await getMockRandomQuestionByDifficulty(difficulty);
+  const post = { userA: activeUser, question };
   return 3;
+}
+
+export async function joinMockBattle(difficulty) {
+  console.log("no battle found for difficulty");
 }
 
 export async function getMockBattleByID(battleID) {
@@ -38,4 +39,18 @@ export async function getMockBattleByID(battleID) {
     userB: { displayName: "alex" },
     question: "two sum",
   };
+}
+
+export async function forfeitMockBattle(activeUser, battleID) {
+  const success = true;
+  if (!success) {
+    throw new Error("could not forfeit battle");
+  }
+  const newScore = await updateMockScore(activeUser, -100);
+  console.log(`new score is: ${newScore}`);
+  return success;
+}
+
+export async function updateMockScore(activeUser, points) {
+  return activeUser.score + points;
 }

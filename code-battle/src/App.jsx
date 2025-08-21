@@ -1,6 +1,6 @@
 // holds React Router setup and wraps everything with Context Providers (Auth, Battle).
 import "./App.css";
-import { Route, Routes, useNavigate } from "react-router";
+import { Route, Routes, useNavigate, Navigate } from "react-router";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignupPage";
@@ -13,7 +13,11 @@ import SelectPage from "./pages/SelectPage";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import WaitingRoomPage from "./pages/WaitingRoomPage";
 import CodeBattlePage from "./pages/CodeBattlePage";
-import { postMockBattle } from "./utils/supabaseQueries";
+import {
+  postMockBattle,
+  joinMockBattle,
+  forfeitMockBattle,
+} from "./utils/supabaseQueries";
 
 const links = {
   guest: [
@@ -53,11 +57,18 @@ function App() {
     }
   }
 
-  function handleStartCoding() {
+  async function handleStartCoding(activeUser) {
     if (mode === "Practice") {
       navigate("/code-battle");
     } else if (mode === "Battle") {
-      navigate("/waiting-room");
+      const joinedBattle = await joinMockBattle(difficulty);
+      if (!joinedBattle) {
+        const battle = await postMockBattle(activeUser, difficulty);
+        setBattleID(battle);
+        navigate("/waiting-room");
+        return;
+      }
+      navigate("/code-battle");
     }
   }
 
@@ -66,11 +77,25 @@ function App() {
   }
 
   async function handleOpponentFound(opponent) {
-    console.log("opponent found");
     setOpponent(opponent);
-    const battle = await postMockBattle();
-    setBattleID(battle);
+    if (opponent) {
+    }
+
     navigate("/code-battle");
+  }
+
+  async function handleForfeitBattle(activeUser, battleID) {
+    if (!battleID) {
+      navigate("/");
+      return;
+    }
+
+    const success = await forfeitMockBattle(activeUser, battleID);
+    if (!success) {
+      throw new Error("user quit, but db thinks he is still available");
+    }
+    console.log("successfully forfeit the match");
+    setBattleID(null);
   }
 
   return (
@@ -105,11 +130,12 @@ function App() {
                 path="/waiting-room"
                 element={
                   <ProtectedRoute>
+                    battleID ? (
                     <WaitingRoomPage
                       onOpponentFound={handleOpponentFound}
-                      mode={mode}
                       difficulty={difficulty}
                     />
+                    ) : <Navigate replace to={"/"} />
                   </ProtectedRoute>
                 }
               />
@@ -121,6 +147,7 @@ function App() {
                       mode={mode}
                       battleID={battleID}
                       handleFinishCoding={handleFinishCoding}
+                      handleForfeitBattle={handleForfeitBattle}
                     />
                   </ProtectedRoute>
                 }

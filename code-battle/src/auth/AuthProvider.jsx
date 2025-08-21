@@ -4,16 +4,25 @@ import { useNavigate } from "react-router";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ onAuthReady, children }) {
-  const [activeUser, setActiveUser] = useState(null);
+  const [activeUser, setActiveUser] = useState(
+    JSON.parse(localStorage.getItem("activeUser")) || null
+  );
   const navigate = useNavigate();
 
-  // Call onAuthReady after mount
   useEffect(() => {
-    onAuthReady();
-  }, [onAuthReady]);
+    const fetchSession = async () => {
+      if (!activeUser) {
+        handleLogin();
+      }
+      onAuthReady();
+    };
+    fetchSession();
+  }, []);
 
   const handleLogin = async (email, password) => {
-    setActiveUser({ id: 1, displayName: "john" });
+    const mockUser = { id: 1, displayName: "john", score: 0 };
+    localStorage.setItem("activeUser", JSON.stringify(mockUser));
+    setActiveUser(mockUser);
     navigate("/");
   };
 
