@@ -39,8 +39,13 @@ export async function getMockBattleByID(battleID) {
   };
 }
 
-export async function forfeitMockBattle(battleID) {
+export async function forfeitMockBattle(activeUser, battleID) {
   const success = true;
+  if (!success) {
+    throw new Error("could not forfeit battle");
+  }
+  const newScore = await updateMockScore(activeUser, -100);
+  console.log(`new score is: ${newScore}`);
   return success;
 }
 
