@@ -29,8 +29,8 @@ export async function postMockBattle(activeUser, difficulty) {
   return 3;
 }
 
-export async function joinMockBattle(battleID) {
-  console.log("john joined the battle");
+export async function joinMockBattle(difficulty) {
+  console.log("no battle found for difficulty");
 }
 
 export async function getMockBattleByID(battleID) {
