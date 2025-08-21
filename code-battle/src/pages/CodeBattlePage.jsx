@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { getMockBattleByID } from "../utils/supabaseQueries";
 
-export default function CodeBattlePage({ battleID, handleFinishCoding }) {
+export default function CodeBattlePage({
+  battleID,
+  handleFinishCoding,
+  handleForfeitBattle,
+}) {
   const [data, setData] = useState(null);
   useEffect(() => {
     async function getData() {
@@ -15,6 +19,7 @@ export default function CodeBattlePage({ battleID, handleFinishCoding }) {
     <>
       code battle
       <button onClick={handleFinishCoding}>Submit</button>
+      <button onClick={handleForfeitBattle}>Forfeit Battle</button>
     </>
   );
 }
