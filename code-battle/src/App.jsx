@@ -31,7 +31,6 @@ const links = {
     { to: "/", text: "Home" },
     { to: "/leaderboard", text: "Leaderboard" },
     { to: "/help", text: "Help" },
-    { to: "/select-difficulty", text: "Difficulty" },
   ],
 };
 
