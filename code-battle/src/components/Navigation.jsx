@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { NavLink } from "react-router";
 import { useMockAuth } from "../auth/AuthProvider";
 
 const Navigation = ({ links, hide }) => {
@@ -22,9 +22,15 @@ const Navigation = ({ links, hide }) => {
         >
           <div style={{ display: "flex", gap: "1rem" }}>
             {links[userOrGuest]?.map(({ to, text }) => (
-              <Link key={to} to={to}>
+              <NavLink
+                key={to}
+                to={to}
+                className={({ isActive, isPending }) =>
+                  isPending ? "pending" : isActive ? "active" : ""
+                }
+              >
                 {text}
-              </Link>
+              </NavLink>
             ))}
           </div>
           <div
