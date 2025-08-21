@@ -18,10 +18,5 @@ export default function WaitingRoomPage({ onOpponentFound, mode, difficulty }) {
     return () => clearInterval(interval);
   }, []);
 
-  if (mode !== "Battle") {
-    const navigate = useNavigate();
-    navigate("/");
-  }
-
   return <>Waiting for Opponent</>;
 }
