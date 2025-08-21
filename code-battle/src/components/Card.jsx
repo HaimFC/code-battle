@@ -1,10 +1,10 @@
-export default function Card({ text, handleClick, clicked, setClicked }) {
+export default function Card({ text, handleClick, selected }) {
+  console.log(selected);
   return (
     <p
-      className={text === clicked ? "card selected" : "card unselected"}
+      className={text === selected ? "card selected" : "card unselected"}
       onClick={() => {
         handleClick(text);
-        setClicked(text);
       }}
     >
       {text}

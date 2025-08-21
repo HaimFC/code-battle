@@ -1,8 +1,6 @@
-import { useState } from "react";
 import Card from "./Card";
 
-export default function Cards({ cards, handleClick }) {
-  const [clicked, setClicked] = useState("");
+export default function Cards({ cards, handleClick, selected }) {
   return (
     <>
       {cards &&
@@ -11,8 +9,7 @@ export default function Cards({ cards, handleClick }) {
             key={index}
             text={text}
             handleClick={handleClick}
-            clicked={clicked}
-            setClicked={setClicked}
+            selected={selected}
           />
         ))}
     </>
