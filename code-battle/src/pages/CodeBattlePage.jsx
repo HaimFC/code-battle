@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getMockBattleByID } from "../utils/supabaseQueries";
 import { useMockAuth } from "../auth/AuthProvider";
+import { Button } from "@mantine/core";
 
 export default function CodeBattlePage({
   battleID,
@@ -25,10 +26,10 @@ export default function CodeBattlePage({
     <>
       {battleID ? "Code Battle!" : "Practice Coding"}
       {data && data?.question}
-      <button onClick={() => handleFinishCoding(activeUser)}>Submit</button>
-      <button onClick={() => handleForfeitBattle(activeUser, battleID)}>
+      <Button onClick={() => handleFinishCoding(activeUser)}>Submit</Button>
+      <Button onClick={() => handleForfeitBattle(activeUser, battleID)}>
         {battleID ? "Forfeit Battle" : "Quit"}
-      </button>
+      </Button>
     </>
   );
 }
