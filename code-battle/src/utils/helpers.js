@@ -23,4 +23,4 @@ function formatMemory(kb) {
   return `${n.toFixed(0)} KB`;
 }
 
-export default { safeEq, normalizeOutput, formatMemory, formatTime }
+export { safeEq, normalizeOutput, formatMemory, formatTime }

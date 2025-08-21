@@ -1,15 +1,17 @@
 // Function for sending code to Judge0 API for execution.
 
-import { safeEq } from '../utils/helpers'
+import { safeEq } from '../utils/helpers.js'
+import 'dotenv/config'
 
 async function createSubmission(sourceCode, languageId, stdin = "") {
-  const url = `${import.meta.env.VITE_JUDGE0_BASE}/submissions?base64_encoded=false&wait=true`
+const url = `${process.env.VITE_JUDGE0_BASE}/submissions?base64_encoded=false&wait=true`
 
-  const headers = {
-    "Content-Type": "application/json",
-    "X-RapidAPI-Key": import.meta.env.VITE_JUDGE0_KEY,
-    "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"
-  }
+const headers = {
+  "Content-Type": "application/json",
+  "X-RapidAPI-Key": process.env.VITE_JUDGE0_KEY,
+  "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"
+}
+
 
   const body = JSON.stringify({
     source_code: sourceCode,
