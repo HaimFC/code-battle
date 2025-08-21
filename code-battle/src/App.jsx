@@ -4,6 +4,8 @@ import '@mantine/core/styles.css';
 import { MantineProvider } from '@mantine/core';
 import './App.css'
 import BattlePage from './pages/BattlePage';
+import BattleModeCard from './components/battleModeCard';
+import BattleListPage from './pages/BattleListPage';
 
 const comp = true
 const players = [{name:"Haim Cohen", status:"Coding..."},{name:"Shlomo Levi", status:"Coding..."}]
@@ -29,7 +31,8 @@ function App() {
   return (
     <>
       <MantineProvider>
-        <BattlePage comp={comp} players={players} question={question}/>
+        {/* <BattlePage comp={comp} players={players} question={question}/> */}
+        <BattleListPage/>
       </MantineProvider>
     </>
   )
