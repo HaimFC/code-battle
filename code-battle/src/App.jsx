@@ -33,7 +33,6 @@ const links = {
     { to: "/help", text: "Help" },
     { to: "/select-difficulty", text: "Difficulty" },
   ],
-  battle: [],
 };
 
 function App() {
@@ -96,6 +95,7 @@ function App() {
     }
     console.log("successfully forfeit the match");
     setBattleID(null);
+    navigate("/");
   }
 
   return (
