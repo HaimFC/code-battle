@@ -11,7 +11,7 @@ export default function WaitingRoomPage({ onOpponentFound, difficulty }) {
       }
     }
     getData();
-  });
+  }, 5000);
 
   return <>Waiting for Opponent</>;
 }
