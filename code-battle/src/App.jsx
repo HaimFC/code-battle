@@ -80,6 +80,8 @@ function App() {
     setBattleID(null);
     navigate("/");
   }
+  return (
+    <>
       <AuthProvider onAuthReady={() => setAuthReady(true)}>
         {isAuthReady && (
           <Layout>
