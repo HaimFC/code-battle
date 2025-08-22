@@ -18,6 +18,10 @@ function BattlePage({ comp, players, question }) {
 
   useEffect(() => {
     const start = Date.now();
+    const id = setInterval(
+      () => setElapsed(Math.floor((Date.now() - start) / 1000)),
+      1000
+    );
     const id = setInterval(() => setElapsed(Math.floor((Date.now() - start) / 1000)), 1000);
     return () => clearInterval(id);
   }, []);
@@ -25,6 +29,9 @@ function BattlePage({ comp, players, question }) {
   return (
     <div className="battle-shell">
       <div className="battle-header">
+        <Title className="screen-timer" order={2}>
+          {formatTime(elapsed)}
+        </Title>
         <Title className="screen-timer" order={2}>{formatTime(elapsed)}</Title>
       </div>
 
@@ -66,6 +73,14 @@ function BattlePage({ comp, players, question }) {
         </div>
 
         <div className="right-panel">
+          <Button variant="filled" size="xl" color="green" radius="md">
+            Submit
+          </Button>
+
+          <div className="panel-section">
+            <Title size={10} className="section-title">
+              Question Description
+            </Title>
           <Button variant="filled" size="xl" color="green" radius="md">Submit</Button>
 
           <div className="panel-section">
@@ -76,6 +91,9 @@ function BattlePage({ comp, players, question }) {
           </div>
 
           <div className="panel-section">
+            <Title size={10} className="section-title">
+              Output
+            </Title>
             <Title size={10} className="section-title">Output</Title>
             <pre className="section-content output">{}</pre>
           </div>
