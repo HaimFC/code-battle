@@ -1,9 +1,9 @@
 // Instructions/rules page.
-import { Text } from "@mantine/core";
+import { Text, Card } from "@mantine/core";
 
 export default function HelpPage() {
   return (
-    <>
+    <Card radius="10px">
       <Text>
         Compete against another player. Score based on correctness, time to
         complete, and time and space-complexity.
@@ -12,6 +12,6 @@ export default function HelpPage() {
       <Text>Step 2: Choose a mode: Practice / Battle</Text>
       <Text>Step 3: Choose a difficulty: Easy, Medium, Hard</Text>
       <Text>Step 4: Code!</Text>
-    </>
+    </Card>
   );
 }
