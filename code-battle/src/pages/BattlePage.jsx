@@ -12,9 +12,10 @@ function formatTime(total) {
   return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
 }
 
-function BattlePage({ comp, players, question }) {
-  const [code, setCode] = useState(question.initialValue);
+function BattlePage({ comp, players = [], question }) {
+  const [code, setCode] = useState(question?.initialValue ?? "");
   const [elapsed, setElapsed] = useState(0);
+  const [output, setOutput] = useState("");
 
   useEffect(() => {
     const start = Date.now();
@@ -22,9 +23,13 @@ function BattlePage({ comp, players, question }) {
       () => setElapsed(Math.floor((Date.now() - start) / 1000)),
       1000
     );
-    const id = setInterval(() => setElapsed(Math.floor((Date.now() - start) / 1000)), 1000);
     return () => clearInterval(id);
   }, []);
+
+  const handleRunTests = () => {
+    // TODO: חבר ל־runner בפועל
+    setOutput("Running tests...\n(All good ✨)");
+  };
 
   return (
     <div className="battle-shell">
@@ -32,28 +37,32 @@ function BattlePage({ comp, players, question }) {
         <Title className="screen-timer" order={2}>
           {formatTime(elapsed)}
         </Title>
-        <Title className="screen-timer" order={2}>{formatTime(elapsed)}</Title>
       </div>
 
       <div className="battle-page">
+        {/* LEFT PANEL */}
         <div className="left-panel">
           <div className="players-card">
             <div className="p-slot left">
               <div className="p-info">
-                <Title size={16}>{players[0].name}</Title>
-                <Title size={12}>{players[0].status}</Title>
+                <Title order={5}>{players[0]?.name ?? "Player 1"}</Title>
+                <Text size="sm" c="dimmed">
+                  {players[0]?.status ?? "Waiting"}
+                </Text>
               </div>
-              <ProfileImage name={players[0].name} color="red" />
+              <ProfileImage name={players[0]?.name ?? "P1"} color="red" />
             </div>
 
             {comp && <div className="vs">VS</div>}
 
-            {comp && (
+            {comp && players[1] && (
               <div className="p-slot right">
-                <ProfileImage name={players[1].name} color="blue" />
+                <ProfileImage name={players[1]?.name ?? "P2"} color="blue" />
                 <div className="p-info">
-                  <Title size={16}>{players[1].name}</Title>
-                  <Title size={12}>{players[1].status}</Title>
+                  <Title order={5}>{players[1]?.name ?? "Player 2"}</Title>
+                  <Text size="sm" c="dimmed">
+                    {players[1]?.status ?? "Waiting"}
+                  </Text>
                 </div>
               </div>
             )}
@@ -61,41 +70,41 @@ function BattlePage({ comp, players, question }) {
 
           <div className="question">
             <div className="code">
-              <Title size={10}>Code Editor</Title>
+              <Title order={6}>Code Editor</Title>
               <div className="editor">
                 <CodeEditor code={code} setCode={setCode} />
               </div>
               <div className="code-actions">
-                <Button fullWidth>Run Tests</Button>
+                <Button fullWidth onClick={handleRunTests}>
+                  Run Tests
+                </Button>
               </div>
             </div>
           </div>
         </div>
 
+        {/* RIGHT PANEL */}
         <div className="right-panel">
           <Button variant="filled" size="xl" color="green" radius="md">
             Submit
           </Button>
 
           <div className="panel-section">
-            <Title size={10} className="section-title">
+            <Title order={6} className="section-title">
               Question Description
             </Title>
-          <Button variant="filled" size="xl" color="green" radius="md">Submit</Button>
-
-          <div className="panel-section">
-            <Title size={10} className="section-title">Question Description</Title>
             <Text className="section-content description" size="lg" mb="md">
-              {question.description}
+              {question?.description ?? ""}
             </Text>
           </div>
 
           <div className="panel-section">
-            <Title size={10} className="section-title">
+            <Title order={6} className="section-title">
               Output
             </Title>
-            <Title size={10} className="section-title">Output</Title>
-            <pre className="section-content output">{}</pre>
+            <pre className="section-content output">
+              {output || ""}
+            </pre>
           </div>
         </div>
       </div>
