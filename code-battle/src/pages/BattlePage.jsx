@@ -22,6 +22,7 @@ function BattlePage({ comp, players, question }) {
       () => setElapsed(Math.floor((Date.now() - start) / 1000)),
       1000
     );
+    const id = setInterval(() => setElapsed(Math.floor((Date.now() - start) / 1000)), 1000);
     return () => clearInterval(id);
   }, []);
 
@@ -31,6 +32,7 @@ function BattlePage({ comp, players, question }) {
         <Title className="screen-timer" order={2}>
           {formatTime(elapsed)}
         </Title>
+        <Title className="screen-timer" order={2}>{formatTime(elapsed)}</Title>
       </div>
 
       <div className="battle-page">
@@ -79,6 +81,10 @@ function BattlePage({ comp, players, question }) {
             <Title size={10} className="section-title">
               Question Description
             </Title>
+          <Button variant="filled" size="xl" color="green" radius="md">Submit</Button>
+
+          <div className="panel-section">
+            <Title size={10} className="section-title">Question Description</Title>
             <Text className="section-content description" size="lg" mb="md">
               {question.description}
             </Text>
@@ -88,6 +94,7 @@ function BattlePage({ comp, players, question }) {
             <Title size={10} className="section-title">
               Output
             </Title>
+            <Title size={10} className="section-title">Output</Title>
             <pre className="section-content output">{}</pre>
           </div>
         </div>

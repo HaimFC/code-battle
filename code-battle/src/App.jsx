@@ -1,4 +1,5 @@
 // holds React Router setup and wraps everything with Context Providers (Auth, Battle).
+
 import "./App.css";
 import { Route, Routes, useNavigate, Navigate } from "react-router";
 import HomePage from "./pages/HomePage";
@@ -79,9 +80,6 @@ function App() {
     setBattleID(null);
     navigate("/");
   }
-
-  return (
-    <>
       <AuthProvider onAuthReady={() => setAuthReady(true)}>
         {isAuthReady && (
           <Layout>
@@ -158,5 +156,4 @@ function App() {
     </>
   );
 }
-
 export default App;
