@@ -34,7 +34,8 @@ function BattleListPage() {
   };
 
   return (
-    <div className="battle-page">
+    <div className="battle-list-page full-bleed">
+
       <h1 className="battle-title">Battle</h1>
 
       <div className="battle-cards">

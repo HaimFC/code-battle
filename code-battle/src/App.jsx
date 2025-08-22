@@ -161,11 +161,7 @@
 
 // holds React Router setup and wraps everything with Context Providers (Auth, Battle).
 
-import '@mantine/core/styles.css';
-import { MantineProvider } from '@mantine/core';
-import './App.css'
 import BattlePage from './pages/BattlePage';
-import BattleModeCard from './components/battleModeCard';
 import BattleListPage from './pages/BattleListPage';
 
 const comp = true
@@ -191,10 +187,12 @@ exports.solution = calculator;`}
 function App() {
   return (
     <>
-      <MantineProvider>
-        {/* <BattlePage comp={comp} players={players} question={question}/> */}
-        <BattleListPage/>
-      </MantineProvider>
+    <div>
+      <BattlePage comp={comp} players={players} question={question}/>
+        {/* <BattleListPage/> */}
+    </div>
+        
   </>
   )}
+
 export default App

@@ -1,5 +1,5 @@
-.battle-page {
-  min-height: 100dvh;
+.battle-list-page {
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -7,6 +7,8 @@
   gap: 2rem;
   background: radial-gradient(1200px 600px at 50% -10%, rgba(80, 120, 255, 0.15), transparent 70%),
               linear-gradient(180deg, #0f1224 0%, #0b0e1a 100%);
+  width: 100%;
+
 }
 
 .battle-title {
@@ -59,7 +61,7 @@
 }
 
 .battle-actions {
-  width: min(1100px, 92vw);
+  /* width: min(1100px, 92vw); */
   display: flex;
   justify-content: center;
   margin-top: 0.5rem;
