@@ -195,8 +195,6 @@ function App() {
         {/* <BattlePage comp={comp} players={players} question={question}/> */}
         <BattleListPage/>
       </MantineProvider>
-    </>
-  )
-}
-
+  </>
+  )}
 export default App
