@@ -1,5 +1,5 @@
 import { useMockAuth } from "../auth/AuthProvider";
-import { Button, TextInput } from "@mantine/core";
+import { Button, TextInput, Group } from "@mantine/core";
 import { useForm } from "@mantine/form";
 
 // TODO: Use supabase handleLogin function
@@ -30,20 +30,23 @@ export default function LoginPage() {
         handleLogin(values.email, values.password)
       )}
     >
-      <TextInput
-        w={200}
-        withAsterisk
-        placeholder="Enter email"
-        key={form.key("email")}
-        {...form.getInputProps("email")}
-      />
-      <TextInput
-        w={200}
-        withAsterisk
-        placeholder="Enter password"
-        key={form.key("password")}
-        {...form.getInputProps("password")}
-      />
+      <Group>
+        <TextInput
+          w={200}
+          withAsterisk
+          placeholder="Enter email"
+          key={form.key("email")}
+          {...form.getInputProps("email")}
+        />
+        <TextInput
+          w={200}
+          withAsterisk
+          placeholder="Enter password"
+          key={form.key("password")}
+          {...form.getInputProps("password")}
+        />
+      </Group>
+
       <Button
         style={{ alignSelf: "flex-start", marginLeft: "0.1rem" }}
         type="submit"

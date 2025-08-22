@@ -59,3 +59,7 @@ export async function getProfile(activeUser) {
   const data = { user_id: 1, displayName: "john", score: 9001 };
   return data;
 }
+
+export async function getActiveBattle(activeUser) {
+  const battleID = 3;
+}
