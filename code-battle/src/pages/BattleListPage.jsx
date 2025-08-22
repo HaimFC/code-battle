@@ -21,7 +21,7 @@ function BattleListPage() {
   };
 
   const handleSearch = () => {
-    if (onModes.size === 0) return; // ביטחון כפול
+    if (onModes.size === 0) return;
     setPrevOnModes(new Set(onModes));
     setLoadingModes(new Set(onModes));
     setSearching(true);
@@ -62,8 +62,7 @@ function BattleListPage() {
             color="blue"
             size="md"
             onClick={handleSearch}
-            disabled={onModes.size === 0} // ← כאן המנע מחיפוש
-            title={onModes.size === 0 ? "בחר לפחות מצב אחד" : undefined}
+            disabled={onModes.size === 0}
           >
             Search
           </Button>

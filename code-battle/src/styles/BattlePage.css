@@ -19,18 +19,27 @@
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.5px;
   font-size: 14px;
-  padding: 0px;
+  padding: 0;
 }
 
+/* Mobile-first: עמודה אחת כברירת מחדל */
 .battle-page {
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
+  grid-template-columns: 1fr;
   gap: 24px;
   width: 100%;
   flex: 1 1 auto;
-  padding: 0 24px 24px;
+  padding: 0 16px 16px;
   box-sizing: border-box;
   overflow: hidden;
+}
+
+/* Two columns only on wide screens */
+@media (min-width: 900px) {
+  .battle-page {
+    grid-template-columns: 1.2fr 0.8fr;
+    padding: 0 24px 24px;
+  }
 }
 
 .left-panel,
@@ -203,15 +212,4 @@
 .right-panel .panel-section:last-of-type {
   flex: 0 0 28%;
   min-height: 140px;
-}
-
-@media (max-width: 1100px) {
-  .battle-page {
-    grid-template-columns: 1fr;
-    height: auto;
-    min-height: 100vh;
-    padding: 0 16px 16px;
-  }
-  .right-panel { overflow: visible; }
-  .panel-section { max-height: 50vh; }
 }
