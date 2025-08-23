@@ -11,6 +11,7 @@ import { AuthProvider } from "./context/AuthContext";
 import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import EndBattlePage from "./pages/EndBattlePage";
+import EndPracticePage from "./pages/EndPracticePage";
 
 import PracticePickPage from "./pages/PracticePickPage";
 import LoadingPracticeQuestion from "./pages/LoadingPracticeQuestion";
@@ -88,7 +89,22 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/end" element={<EndBattlePage />} />
+              <Route
+                path="/end-practice"
+                element={
+                  <ProtectedRoute>
+                    <EndPracticePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/end-battle"
+                element={
+                  <ProtectedRoute>
+                    <EndBattlePage />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/profile"
                 element={

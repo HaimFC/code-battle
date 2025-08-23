@@ -7,6 +7,25 @@ const DIFF_MAP = {
   hell: "Hell",
 };
 
+export async function upsertBattleSubmission(payload) {
+  const { data, error } = await supabase
+    .from("battle_submissions")
+    .upsert(payload, { onConflict: "battle_id,user_id" })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function getBattleSubmissions(battleId) {
+  const { data, error } = await supabase
+    .from("battle_submissions")
+    .select("*")
+    .eq("battle_id", battleId);
+  if (error) throw error;
+  return data || [];
+}
+
 export async function addProfileScoreOnce(userId, delta, key) {
   const { data, error } = await supabase.rpc("add_profile_score_once", {
     p_user: userId,

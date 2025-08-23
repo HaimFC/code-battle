@@ -14,20 +14,33 @@ function msToHMS(ms) {
   const pad = (n) => n.toString().padStart(2, "0");
   return h > 0 ? `${h}:${pad(m)}:${pad(sec)}` : `${pad(m)}:${pad(sec)}`;
 }
+
 function normBigO(s) {
   if (!s) return "";
   const t = String(s).toLowerCase().replace(/\s+/g, "");
-  const map = { "o(1)":"O(1)","o(logn)":"O(log n)","o(n)":"O(n)","o(nlogn)":"O(n log n)","o(n^2)":"O(n^2)","o(n2)":"O(n^2)","o(n^3)":"O(n^3)","o(2^n)":"O(2^n)","o(n!)":"O(n!)" };
+  const map = {
+    "o(1)": "O(1)",
+    "o(logn)": "O(log n)",
+    "o(n)": "O(n)",
+    "o(nlogn)": "O(n log n)",
+    "o(n^2)": "O(n^2)",
+    "o(n2)": "O(n^2)",
+    "o(n^3)": "O(n^3)",
+    "o(2^n)": "O(2^n)",
+    "o(n!)": "O(n!)"
+  };
   if (map[t]) return map[t];
   if (/o\(.+?\)/.test(t)) return "O(" + t.slice(2, -1) + ")";
   return s;
 }
+
 function bigORank(s) {
   const v = normBigO(s);
-  const order = ["O(1)","O(log n)","O(n)","O(n log n)","O(n^2)","O(n^3)","O(2^n)","O(n!)"];
+  const order = ["O(1)", "O(log n)", "O(n)", "O(n log n)", "O(n^2)", "O(n^3)", "O(2^n)", "O(n!)"];
   const i = order.indexOf(v);
   return i >= 0 ? i : 3;
 }
+
 function scoreFromDiff(diff) {
   if (diff <= 0) return 100;
   if (diff === 1) return 80;
@@ -36,7 +49,7 @@ function scoreFromDiff(diff) {
   return 20;
 }
 
-export default function EndBattlePage() {
+export default function EndPracticePage() {
   const { state } = useLocation();
   const [params] = useSearchParams();
   const { user } = useAuthContext();
@@ -48,30 +61,21 @@ export default function EndBattlePage() {
   const results = state?.results || [];
   const tests = state?.tests || [];
   const question = state?.question || null;
-  const battleId = state?.battleId || null;
-  const preTime = state?.timeLabel || "";
-  const preSpace = state?.spaceLabel || "";
-  const preScore = state?.finalScore || 0;
 
   const [qMeta, setQMeta] = useState({ timeBest: normBigO(question?.TimeComplexity), spaceBest: normBigO(question?.SpaceComplexity) });
-  const [timeLabel, setTimeLabel] = useState(preTime || "");
-  const [spaceLabel, setSpaceLabel] = useState(preSpace || "");
+  const [timeLabel, setTimeLabel] = useState("");
+  const [spaceLabel, setSpaceLabel] = useState("");
   const [awarded, setAwarded] = useState(false);
-
-  const [mineRow, setMineRow] = useState(null);
-  const [oppRow, setOppRow] = useState(null);
 
   useEffect(() => {
     let active = true;
     (async () => {
       if (!code) return;
-      if (!preTime || !preSpace) {
-        const t = estimateTimeComplexityFromCode(code, tests);
-        const s = estimateSpaceComplexityFromCode(code, tests);
-        if (!active) return;
-        setTimeLabel(t.label || "N/A");
-        setSpaceLabel(s.label || "N/A");
-      }
+      const t = estimateTimeComplexityFromCode(code, tests);
+      const s = estimateSpaceComplexityFromCode(code, tests);
+      if (!active) return;
+      setTimeLabel(t.label || "N/A");
+      setSpaceLabel(s.label || "N/A");
     })();
     return () => { active = false; };
   }, [code, tests]);
@@ -92,20 +96,6 @@ export default function EndBattlePage() {
     return () => { active = false; };
   }, [question?.id]);
 
-  useEffect(() => {
-    if (!battleId || !user?.id) return;
-    supabase
-      .from("battle_submissions")
-      .select("*")
-      .eq("battle_id", battleId)
-      .then(({ data }) => {
-        const mine = (data || []).find(r => r.user_id === user.id) || null;
-        const opp = (data || []).find(r => r.user_id !== user.id) || null;
-        setMineRow(mine);
-        setOppRow(opp);
-      });
-  }, [battleId, user?.id]);
-
   const safeTime = timeLabel && timeLabel !== "N/A" ? timeLabel : "";
   const safeSpace = spaceLabel && spaceLabel !== "N/A" ? spaceLabel : "";
 
@@ -115,30 +105,29 @@ export default function EndBattlePage() {
   const timeScore = scoreFromDiff(timeDiff) * 0.25;
   const spaceDiff = safeSpace ? bigORank(safeSpace) - bigORank(qMeta.spaceBest) : 0;
   const spaceScore = (safeSpace ? scoreFromDiff(spaceDiff) : 60) * 0.25;
-  const myScore = preScore || Math.round(testsScore + timeScore + spaceScore);
-
-  const oppScore = oppRow?.final_score || 0;
-  const oppElapsed = oppRow?.elapsed_ms || Number.MAX_SAFE_INTEGER;
-  const winnerIsMe = myScore > oppScore || (myScore === oppScore && (elapsedMs || Number.MAX_SAFE_INTEGER) <= oppElapsed);
+  const finalScore = Math.round(testsScore + timeScore + spaceScore);
 
   useEffect(() => {
     if (!user?.id) return;
+    if (!sid) return;
     if (awarded) return;
-    if (!Number.isFinite(myScore)) return;
-    addProfileScoreOnce(user.id, myScore, sid).then((ok) => { if (ok) setAwarded(true); }).catch(() => {});
-  }, [user?.id, myScore, sid, awarded]);
+    if (!Number.isFinite(finalScore)) return;
+    addProfileScoreOnce(user.id, finalScore, sid)
+      .then((ok) => { if (ok) setAwarded(true); })
+      .catch(() => {});
+  }, [user?.id, sid, finalScore, awarded]);
 
   return (
     <Container size="lg" py="lg">
       <Stack gap="md">
         <Group justify="space-between" align="center">
           <Title order={3} style={{ margin: 0 }}>{question?.title || "Result"}</Title>
-          <Badge color="green" variant="light">{winnerIsMe ? "Winner: You" : "Winner: Opponent"}</Badge>
+          <Badge color="green" variant="light">Score {finalScore}</Badge>
         </Group>
 
         <Card radius="lg" withBorder p="lg">
           <Stack gap="sm">
-            <Title order={5}>Your Summary</Title>
+            <Title order={5}>Summary</Title>
             <Grid>
               <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                 <Text size="sm" c="dimmed">Time</Text>
@@ -173,7 +162,7 @@ export default function EndBattlePage() {
 
         <Card radius="lg" withBorder p="lg">
           <Stack gap="sm">
-            <Title order={5}>Your Code</Title>
+            <Title order={5}>Code</Title>
             <Card withBorder radius="md" p="md">
               <pre style={{ margin: 0, overflowX: "auto" }}>{code || ""}</pre>
             </Card>
@@ -182,46 +171,27 @@ export default function EndBattlePage() {
 
         <Card radius="lg" withBorder p="lg">
           <Stack gap="sm">
-            <Title order={5}>Opponent Summary</Title>
-            <Grid>
-              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                <Text size="sm" c="dimmed">Time</Text>
-                <Text fw={600}>{msToHMS(oppRow?.elapsed_ms || 0)}</Text>
-              </Grid.Col>
-              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                <Text size="sm" c="dimmed">Tests</Text>
-                <Text fw={600}>{oppRow?.summary?.passed ?? 0} of {oppRow?.summary?.total ?? 0}</Text>
-                <Progress value={oppRow?.summary?.total ? Math.round((oppRow.summary.passed / oppRow.summary.total) * 100) : 0} mt={6} />
-              </Grid.Col>
-              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                <Stack gap="xs" align="center">
-                  <Text size="sm" c="dimmed">Time Complexity</Text>
-                  <Group gap="xs" justify="center">
-                    <Badge variant="light" color="blue">{oppRow?.time_label || "N/A"}</Badge>
-                  </Group>
-                </Stack>
-              </Grid.Col>
-              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                <Stack gap="xs" align="center">
-                  <Text size="sm" c="dimmed">Space Complexity</Text>
-                  <Group gap="xs" justify="center">
-                    <Badge variant="light" color="violet">{oppRow?.space_label || "N/A"}</Badge>
-                  </Group>
-                </Stack>
-              </Grid.Col>
-            </Grid>
+            <Title order={5}>Test Results</Title>
+            <Stack gap={6}>
+              {(results || []).slice(0, 100).map((r) => (
+                <Group key={r.i} justify="space-between">
+                  <Text size="sm">Test #{r.i}</Text>
+                  <Badge color={r.passed ? "green" : "red"} variant="light">{r.passed ? "Passed" : "Failed"}</Badge>
+                  <Text size="sm" c="dimmed">{r.time_ms}ms</Text>
+                </Group>
+              ))}
+            </Stack>
           </Stack>
         </Card>
 
         <Card radius="lg" withBorder p="lg">
           <Stack gap="xs">
-            <Title order={5}>Score</Title>
-            <Group justify="space-between">
-              <Text>You: {myScore}</Text>
-              <Text>Opponent: {oppScore}</Text>
-            </Group>
+            <Title order={5}>Score Breakdown</Title>
+            <Text>Tests: {Math.round(testsScore)}/50</Text>
+            <Text>Time Complexity: {Math.round(timeScore)}/25</Text>
+            <Text>Space Complexity: {Math.round(spaceScore)}/25</Text>
             <Divider my="sm" />
-            <Title order={2}>{winnerIsMe ? "You Win" : "Opponent Wins"}</Title>
+            <Title order={2}>{finalScore}</Title>
           </Stack>
         </Card>
       </Stack>
