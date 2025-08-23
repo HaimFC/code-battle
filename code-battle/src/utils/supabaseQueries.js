@@ -11,8 +11,8 @@ export async function getLeaderboardProfiles() {
   const { data, error } = await supabase
     .from("profiles")
     .select("id, display_name, first_name, last_name, score, rank")
-    .order("rank", { ascending: false })   // rank 5 first
-    .order("score", { ascending: false }); // then score desc within each rank
+    .order("rank", { ascending: false })
+    .order("score", { ascending: false });
 
   if (error) throw error;
 
@@ -32,9 +32,11 @@ export async function getRandomQuestionByDifficulty(diffKey) {
 
   const { data, error } = await supabase
     .from("questions")
-    .select("id,title,description,initialValue:InitialValue,difficulty,Type,categories,TimeComplexity,SpaceComplexity")
-    .eq("difficulty", difficulty)                     
-    .or("Type.eq.Practice,Type.eq.Practice");      
+    .select(
+      "id,title,description,initialValue:InitialValue,difficulty,Type,categories,TimeComplexity,SpaceComplexity"
+    )
+    .eq("Type", "Practice")
+    .eq("difficulty", difficulty);
 
   if (error) throw error;
   if (!data || data.length === 0) {
@@ -51,6 +53,31 @@ export async function getRandomQuestionByDifficulty(diffKey) {
   };
 }
 
+export async function enqueueAndMatch(userId, modesSet) {
+  const diffs = Array.from(modesSet);
+
+  const { data, error } = await supabase.rpc("enqueue_and_match", {
+    p_user: userId,
+    p_diffs: diffs,
+  });
+  if (error) throw error;
+
+  if (Array.isArray(data) && data.length > 0) {
+    const row = data[0];
+    return {
+      battleId: row.battle_id,
+      opponentId: row.opponent,
+      difficulty: row.match_difficulty,
+      questionId: row.question_id,
+    };
+  }
+  return null;
+}
+
+export async function leaveQueue(userId) {
+  const { error } = await supabase.rpc("leave_queue", { p_user: userId });
+  if (error) throw error;
+}
 
 export async function getMockLeaderboard() {
   const data = [
@@ -68,10 +95,6 @@ export async function getMockOpponent(difficulty) {
 }
 
 async function getMockRandomQuestionByDifficulty(difficulty) {
-  //  const QUESTIONS = { Easy: 13, Medium: 10, Hard: 25 };
-  // if (!(difficulty in QUESTIONS)) {
-  //   throw new Error("difficulty not found");
-  // }
   return "two sum";
 }
 
