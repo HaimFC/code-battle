@@ -27,7 +27,7 @@ function AuthProvider({ children, onAuthReady }) {
     user,
     loading,
     signIn,
-    signUp, // <— the new extended signUp({ ... })
+    signUp,
     signOut: async () => {
       await supaSignOut();
       setUser(null);

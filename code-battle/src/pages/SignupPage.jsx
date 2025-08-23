@@ -20,8 +20,8 @@ export default function SignUpPage() {
       email: (v) => (/^\S+@\S+\.\S+$/.test(v) ? null : "Wrong mail"),
       password: (v) => (v.length >= 6 ? null : "Password too short"),
       displayName: (v) => (v.trim().length >= 2 ? null : "Nickname too short"),
-      firstName: (v) => (v ? null : null), // optional
-      lastName: (v) => (v ? null : null),  // optional
+      firstName: (v) => (v ? null : null), 
+      lastName: (v) => (v ? null : null),  
       phone: (v) => (v && !/^\+?[0-9\s\-()]{6,}$/.test(v) ? "Invalid phone" : null),
     },
   });

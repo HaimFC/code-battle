@@ -10,6 +10,7 @@ import { useState } from "react";
 import { AuthProvider } from "./context/AuthContext";
 import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoute from "./auth/ProtectedRoute";
+import EndBattlePage from "./pages/EndBattlePage";
 
 import PracticePickPage from "./pages/PracticePickPage";
 import LoadingPracticeQuestion from "./pages/LoadingPracticeQuestion";
@@ -87,7 +88,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
+              <Route path="/end" element={<EndBattlePage />} />
               <Route
                 path="/profile"
                 element={

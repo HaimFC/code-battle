@@ -3,6 +3,9 @@ import CodeEditor from "../components/CodeEditor";
 import ProfileImage from "../components/ProfileImage";
 import { useState, useEffect } from "react";
 import "../styles/BattlePage.css";
+import { getQuestionWithTests } from "../utils/supabaseQueries";
+import { runTests } from "../api/judge0";
+import { useNavigate } from "react-router-dom";
 
 function formatTime(total) {
   const h = Math.floor(total / 3600);
@@ -13,23 +16,83 @@ function formatTime(total) {
 }
 
 function BattlePage({ comp, players = [], question }) {
+  const navigate = useNavigate();
   const [code, setCode] = useState(question?.initialValue ?? "");
   const [elapsed, setElapsed] = useState(0);
   const [output, setOutput] = useState("");
+  const [tests, setTests] = useState([]);
+  const [lastSummary, setLastSummary] = useState({ passed: 0, total: 0 });
+  const [lastResults, setLastResults] = useState([]);
 
   useEffect(() => {
     const start = Date.now();
-    const id = setInterval(
-      () => setElapsed(Math.floor((Date.now() - start) / 1000)),
-      1000
-    );
+    const id = setInterval(() => setElapsed(Math.floor((Date.now() - start) / 1000)), 1000);
     return () => clearInterval(id);
   }, []);
 
-  const handleRunTests = () => {
-    setOutput("Running tests...\n(All good ✨)");
+  useEffect(() => {
+    setCode(question?.initialValue ?? "");
+  }, [question?.id]);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!question?.id) return;
+      const { tests: t } = await getQuestionWithTests(question.id);
+      if (!active) return;
+      setTests(Array.isArray(t) ? t : []);
+    })();
+    return () => { active = false; };
+  }, [question?.id]);
+
+  const handleRunTests = async () => {
+    try {
+      setOutput("Running tests...");
+      if (!question?.id) {
+        setOutput("No question id");
+        return;
+      }
+      if (!Array.isArray(tests) || tests.length === 0) {
+        setOutput("No tests found");
+        return;
+      }
+      const res = await runTests({ userCode: code, tests });
+      setLastSummary(res?.summary || { passed: 0, total: 0 });
+      setLastResults(res?.results || []);
+      const lines = [];
+      lines.push(`Passed ${res?.summary?.passed ?? 0} of ${res?.summary?.total ?? 0}`);
+      (res?.results || []).slice(0, 50).forEach(r => {
+        const tag = r.passed ? "OK" : "FAIL";
+        lines.push(`#${r.i} ${tag} ${r.time_ms}ms`);
+        if (!r.passed) {
+          lines.push(` expected: ${JSON.stringify(r.expected)}`);
+          lines.push(` got:      ${JSON.stringify(r.got)}`);
+          if (r.error) lines.push(` error:    ${r.error}`);
+        }
+      });
+      setOutput(lines.join("\n"));
+    } catch (e) {
+      setOutput(String(e));
+    }
   };
 
+  const handleSubmit = () => {
+    const sid =
+      (crypto?.randomUUID?.() || Math.random().toString(36).slice(2)) +
+      "-" + (question?.id || "q");
+
+    navigate(`/end?sid=${encodeURIComponent(sid)}`, {
+      state: {
+        code,
+        elapsedMs: elapsed * 1000,
+        summary: lastSummary,
+        results: lastResults,
+        tests,
+        question
+      }
+    });
+  };
+  
   return (
     <div className="battle-shell">
       <div className="battle-header">
@@ -82,7 +145,7 @@ function BattlePage({ comp, players = [], question }) {
         </div>
 
         <div className="right-panel">
-          <Button variant="filled" size="xl" color="green" radius="md">
+          <Button variant="filled" size="xl" color="green" radius="md" onClick={handleSubmit}>
             Submit
           </Button>
 
