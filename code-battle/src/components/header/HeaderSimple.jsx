@@ -1,8 +1,7 @@
-import { useState } from "react";
 import { Container, Group, Button } from "@mantine/core";
-import classes from "./HeaderSimple.module.css";
-import { useMockAuth } from "../../auth/AuthProvider";
 import { NavLink, useLocation } from "react-router";
+import { useAuthContext } from "../../context/AuthContext";
+import classes from "./HeaderSimple.module.css";
 
 const links = {
   guest: [
@@ -21,24 +20,19 @@ const links = {
 };
 
 export function HeaderSimple() {
-  const { activeUser, handleLogout } = useMockAuth();
-  const userOrGuest = activeUser ? "user" : "guest";
-
+  const { user, signOut } = useAuthContext();
   const { pathname } = useLocation();
-  const override = !(pathname in links[userOrGuest]);
 
-  const [active, setActive] = useState(override ? "/" : pathname);
+  const mode = user ? "user" : "guest";
 
-  const items = links[userOrGuest].map((link) => (
+  const items = links[mode].map((link) => (
     <NavLink
-      key={link.text}
-      href={link.link}
-      className={classes.link}
-      data-active={active === link.to || undefined}
-      onClick={() => {
-        setActive(link.to);
-      }}
+      key={link.to}
       to={link.to}
+      className={({ isActive }) =>
+        `${classes.link} ${isActive ? classes.active ?? "" : ""}`
+      }
+      end={link.to === "/"}
     >
       {link.text}
     </NavLink>
@@ -52,8 +46,8 @@ export function HeaderSimple() {
         </Group>
 
         <Group>
-          {activeUser && (
-            <Button color="red" onClick={handleLogout}>
+          {user && (
+            <Button color="red" onClick={signOut}>
               Log Out
             </Button>
           )}

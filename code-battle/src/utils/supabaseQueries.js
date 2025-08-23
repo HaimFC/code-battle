@@ -1,4 +1,56 @@
-import { useMockAuth } from "../auth/AuthProvider";
+import { supabase } from "../api/supabaseClient";
+
+const DIFF_MAP = {
+  easy: "Easy",
+  medium: "Medium",
+  hard: "Hard",
+  hell: "Hell",
+};
+
+export async function getLeaderboardProfiles() {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, display_name, first_name, last_name, score, rank")
+    .order("rank", { ascending: false })   // rank 5 first
+    .order("score", { ascending: false }); // then score desc within each rank
+
+  if (error) throw error;
+
+  return (data ?? []).map((p) => {
+    const fullName = [p.first_name, p.last_name].filter(Boolean).join(" ");
+    return {
+      ...p,
+      name: p.display_name || fullName || "Anonymous",
+      score: p.score ?? 0,
+      rank: p.rank ?? 0,
+    };
+  });
+}
+
+export async function getRandomQuestionByDifficulty(diffKey) {
+  const difficulty = DIFF_MAP[String(diffKey).toLowerCase()] ?? String(diffKey);
+
+  const { data, error } = await supabase
+    .from("questions")
+    .select("id,title,description,initialValue:InitialValue,difficulty,Type,categories,TimeComplexity,SpaceComplexity")
+    .eq("difficulty", difficulty)                     
+    .or("Type.eq.Practice,Type.eq.Practice");      
+
+  if (error) throw error;
+  if (!data || data.length === 0) {
+    throw new Error(`No questions found for difficulty "${difficulty}"`);
+  }
+
+  const random = data[Math.floor(Math.random() * data.length)];
+  return {
+    id: random.id,
+    title: random.title ?? "",
+    description: random.description ?? "",
+    initialValue: random.initialValue ?? "",
+    difficulty: random.difficulty ?? difficulty,
+  };
+}
+
 
 export async function getMockLeaderboard() {
   const data = [
@@ -55,8 +107,16 @@ export async function updateMockScore(activeUser, points) {
   return activeUser.score + points;
 }
 
-export async function getProfile(activeUser) {
-  const data = { user_id: 1, displayName: "john", score: 9001 };
+export async function getProfile(userId) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select(
+      "id, display_name, first_name, last_name, phone, score, rank, wins, losses, updated_at, created_at"
+    )
+    .eq("id", userId)
+    .single();
+
+  if (error) throw error;
   return data;
 }
 

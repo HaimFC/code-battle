@@ -34,16 +34,14 @@ function BattleListPage() {
   };
 
   return (
-    <div className="battle-list-page full-bleed">
-
+    <div className="battle-list-page">
       <h1 className="battle-title">Battle</h1>
-
       <div className="battle-cards">
         {modes.map((mode) => (
           <BattleModeCard
             key={mode}
             img={`/images/${mode}.png`}
-            mode={mode}
+            diff={mode}
             checked={onModes.has(mode)}
             loading={loadingModes.has(mode)}
             disabled={searching && !onModes.has(mode)}

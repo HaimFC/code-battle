@@ -27,7 +27,6 @@ function BattlePage({ comp, players = [], question }) {
   }, []);
 
   const handleRunTests = () => {
-    // TODO: חבר ל־runner בפועל
     setOutput("Running tests...\n(All good ✨)");
   };
 
@@ -40,7 +39,6 @@ function BattlePage({ comp, players = [], question }) {
       </div>
 
       <div className="battle-page">
-        {/* LEFT PANEL */}
         <div className="left-panel">
           <div className="players-card">
             <div className="p-slot left">
@@ -83,7 +81,6 @@ function BattlePage({ comp, players = [], question }) {
           </div>
         </div>
 
-        {/* RIGHT PANEL */}
         <div className="right-panel">
           <Button variant="filled" size="xl" color="green" radius="md">
             Submit

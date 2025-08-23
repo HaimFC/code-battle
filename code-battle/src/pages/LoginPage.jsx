@@ -1,34 +1,32 @@
-import { useMockAuth } from "../auth/AuthProvider";
-import { Button, TextInput, Group } from "@mantine/core";
+import { useAuthContext } from "../context/AuthContext";
+import { Button, TextInput, PasswordInput, Group } from "@mantine/core";
 import { useForm } from "@mantine/form";
 
-// TODO: Use supabase handleLogin function
-
-// Login form (uses Supabase Auth).
 export default function LoginPage() {
-  const { handleLogin } = useMockAuth();
+  const { signIn } = useAuthContext();
 
   const form = useForm({
     mode: "uncontrolled",
-    initialValues: {
-      email: "",
-      password: "",
-    },
-
+    initialValues: { email: "", password: "" },
     validate: {
-      activeUser: (value) =>
-        /^[a-zA-Z].{1,}$/.test(value) ? null : "Invalid userName",
+      email: (value) =>
+        /^\S+@\S+\.\S+$/.test(value) ? null : "Invalid email",
+      password: (value) =>
+        value.length >= 6 ? null : "Password too short",
     },
-    password: (value) =>
-      /^[a-zA-Z].{1,}$/.test(value) ? null : "Invalid password",
   });
 
   return (
     <form
       style={{ display: "flex", marginTop: "0.25rem" }}
-      onSubmit={form.onSubmit((values) =>
-        handleLogin(values.email, values.password)
-      )}
+      onSubmit={form.onSubmit(async (values) => {
+        try {
+          await signIn(values.email, values.password);
+          alert("Logged in successfully");
+        } catch (err) {
+          alert("Error " + err.message);
+        }
+      })}
     >
       <Group>
         <TextInput
@@ -38,7 +36,7 @@ export default function LoginPage() {
           key={form.key("email")}
           {...form.getInputProps("email")}
         />
-        <TextInput
+        <PasswordInput
           w={200}
           withAsterisk
           placeholder="Enter password"
