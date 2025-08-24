@@ -11,8 +11,9 @@ import {
   Badge,
   Progress,
   Grid,
+  Button,
 } from "@mantine/core";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "../api/supabaseClient";
 import {
   estimateTimeComplexityFromCode,
@@ -84,7 +85,7 @@ export default function EndBattlePage() {
   const battleId = state?.battleId || null;
   const stateTimeLabel = state?.timeLabel || "";
   const stateSpaceLabel = state?.spaceLabel || "";
-  const stateFinalScore = state?.finalScore; 
+  const stateFinalScore = state?.finalScore;
 
   const [mineRow, setMineRow] = useState(null);
   const [oppRow, setOppRow] = useState(null);
@@ -126,8 +127,7 @@ export default function EndBattlePage() {
             spaceBest: normBigO(qrow.SpaceComplexity),
           });
         }
-      } catch {
-      }
+      } catch {}
     })();
     return () => {
       active = false;
@@ -161,12 +161,18 @@ export default function EndBattlePage() {
   const myCode = mineRow?.code ?? stateCode;
   const mySummary = mineRow?.summary ?? stateSummary;
   const myElapsedMs =
-    typeof mineRow?.elapsed_ms === "number" ? mineRow.elapsed_ms : stateElapsedMs;
+    typeof mineRow?.elapsed_ms === "number"
+      ? mineRow.elapsed_ms
+      : stateElapsedMs;
   const myTimeLabelRaw =
-    (mineRow?.time_label && mineRow.time_label !== "N/A" ? mineRow.time_label : "") ||
+    (mineRow?.time_label && mineRow.time_label !== "N/A"
+      ? mineRow.time_label
+      : "") ||
     (stateTimeLabel && stateTimeLabel !== "N/A" ? stateTimeLabel : "");
   const mySpaceLabelRaw =
-    (mineRow?.space_label && mineRow.space_label !== "N/A" ? mineRow.space_label : "") ||
+    (mineRow?.space_label && mineRow.space_label !== "N/A"
+      ? mineRow.space_label
+      : "") ||
     (stateSpaceLabel && stateSpaceLabel !== "N/A" ? stateSpaceLabel : "");
 
   const [fallbackTime, setFallbackTime] = useState("");
@@ -196,22 +202,32 @@ export default function EndBattlePage() {
     ? Math.round((mySummary.passed / mySummary.total) * 100)
     : 0;
   const myTestsScore = myPassedPct * 0.5;
-  const myTimeDiff = myTimeLabel ? bigORank(myTimeLabel) - bigORank(qMeta.timeBest) : 0;
+  const myTimeDiff = myTimeLabel
+    ? bigORank(myTimeLabel) - bigORank(qMeta.timeBest)
+    : 0;
   const myTimeScore = scoreFromDiff(myTimeDiff) * 0.25;
-  const mySpaceDiff = mySpaceLabel ? bigORank(mySpaceLabel) - bigORank(qMeta.spaceBest) : 0;
+  const mySpaceDiff = mySpaceLabel
+    ? bigORank(mySpaceLabel) - bigORank(qMeta.spaceBest)
+    : 0;
   const mySpaceScore = (mySpaceLabel ? scoreFromDiff(mySpaceDiff) : 60) * 0.25;
   const myScoreComputed = Math.round(myTestsScore + myTimeScore + mySpaceScore);
   const myScore = Number.isFinite(mineRow?.final_score)
     ? mineRow.final_score
-    : (Number.isFinite(stateFinalScore) ? stateFinalScore : myScoreComputed);
+    : Number.isFinite(stateFinalScore)
+    ? stateFinalScore
+    : myScoreComputed;
 
-  const oppScore = Number.isFinite(oppRow?.final_score) ? oppRow.final_score : 0;
+  const oppScore = Number.isFinite(oppRow?.final_score)
+    ? oppRow.final_score
+    : 0;
   const oppElapsed = Number.isFinite(oppRow?.elapsed_ms)
     ? oppRow.elapsed_ms
     : Number.MAX_SAFE_INTEGER;
 
   const winnerIsMe =
-    myScore > oppScore || (myScore === oppScore && (myElapsedMs || Number.MAX_SAFE_INTEGER) <= oppElapsed);
+    myScore > oppScore ||
+    (myScore === oppScore &&
+      (myElapsedMs || Number.MAX_SAFE_INTEGER) <= oppElapsed);
 
   const [awarded, setAwarded] = useState(false);
   useEffect(() => {
@@ -224,6 +240,11 @@ export default function EndBattlePage() {
       })
       .catch(() => {});
   }, [user?.id, myScore, sid, awarded]);
+
+  const navigate = useNavigate();
+  function backToHome() {
+    navigate("/");
+  }
 
   return (
     <Container size="lg" py="lg">
@@ -310,7 +331,8 @@ export default function EndBattlePage() {
                   Tests
                 </Text>
                 <Text fw={600}>
-                  {oppRow?.summary?.passed ?? 0} of {oppRow?.summary?.total ?? 0}
+                  {oppRow?.summary?.passed ?? 0} of{" "}
+                  {oppRow?.summary?.total ?? 0}
                 </Text>
                 <Progress
                   value={
@@ -364,6 +386,7 @@ export default function EndBattlePage() {
           </Stack>
         </Card>
       </Stack>
+      <Button onClick={backToHome}>Home</Button>
     </Container>
   );
 }
