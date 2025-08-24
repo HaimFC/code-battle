@@ -23,6 +23,10 @@ export function HeaderSimple() {
   const { user, signOut } = useAuthContext();
   const { pathname } = useLocation();
 
+  if (pathname.includes("practice") || pathname.includes("battle")) {
+    return;
+  }
+
   const mode = user ? "user" : "guest";
 
   const items = links[mode].map((link) => (
@@ -47,7 +51,7 @@ export function HeaderSimple() {
 
         <Group>
           {user && (
-            <Button color="red" onClick={signOut}>
+            <Button color="#d11a2a" onClick={signOut}>
               Log Out
             </Button>
           )}

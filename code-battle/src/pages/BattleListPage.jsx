@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Button } from "@mantine/core";
+import { Button, Flex } from "@mantine/core";
 import { useAuthContext } from "../context/AuthContext";
 import { enqueueAndMatch, leaveQueue } from "../utils/supabaseQueries";
 import BattleModeCard from "../components/battleModeCard";
@@ -41,7 +41,9 @@ function BattleListPage() {
       channelRef.current = null;
     }
     if (leave && user?.id) {
-      try { await leaveQueue(user.id); } catch {}
+      try {
+        await leaveQueue(user.id);
+      } catch {}
     }
   }
 
@@ -108,11 +110,16 @@ function BattleListPage() {
     };
   }, []);
 
+  function backToHome() {
+    navigate("/");
+  }
   return (
     <div className="battle-list-page">
+      <Button bottom={"15px"} left={"25px"} w={100} onClick={backToHome}>
+        Back
+      </Button>
       <h1 className="battle-title">Battle</h1>
-
-      <div className="battle-cards">
+      <Flex className="battle-cards">
         {modes.map((mode) => (
           <BattleModeCard
             key={mode}
@@ -124,11 +131,15 @@ function BattleListPage() {
             onToggle={() => toggleMode(mode)}
           />
         ))}
-      </div>
-
+      </Flex>
       <div className="battle-actions">
         {searching ? (
-          <Button className="search-btn" color="red" size="md" onClick={handleCancel}>
+          <Button
+            className="search-btn"
+            color="red"
+            size="md"
+            onClick={handleCancel}
+          >
             Cancel
           </Button>
         ) : (

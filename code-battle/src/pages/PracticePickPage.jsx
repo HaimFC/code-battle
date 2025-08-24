@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Button } from "@mantine/core";
+import { Button, Flex } from "@mantine/core";
 import { useNavigate } from "react-router";
 import PracticeModeCard from "../components/PracticeModeCard";
 import "../styles/PracticePickPage.css";
@@ -13,10 +12,17 @@ function PracticePickPage() {
     navigate(`/practice/${mode}`);
   }
 
+  function backToHome() {
+    navigate("/");
+  }
+
   return (
     <div className="practice-list-page">
+      <Button bottom={"35px"} left={"25px"} w={100} onClick={backToHome}>
+        Back
+      </Button>
       <h1 className="practice-title">Practice</h1>
-      <div className="practice-cards">
+      <Flex className="practice-cards">
         {modes.map((mode) => (
           <PracticeModeCard
             key={mode}
@@ -25,7 +31,7 @@ function PracticePickPage() {
             onClick={() => handleEnter(mode)}
           />
         ))}
-      </div>
+      </Flex>
     </div>
   );
 }

@@ -11,8 +11,12 @@ import { useForm } from "@mantine/form";
 import { useNavigate } from "react-router";
 
 export default function LoginPage() {
-  const { signIn } = useAuthContext();
+  const { user, signIn } = useAuthContext();
   const navigate = useNavigate();
+
+  if (user) {
+    navigate("/");
+  }
 
   const form = useForm({
     mode: "uncontrolled",
