@@ -41,15 +41,11 @@ function scoreFromDiff(diff) {
   if (diff === 3) return 40;
   return 20;
 }
-
 function isPlaceholderCode(code) {
   if (!code) return true;
   const src = String(code);
   if (/\/\/\s*your\s*code/i.test(src)) return true;
-  const stripped = src
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/\/\/.*$/gm, "")
-    .trim();
+  const stripped = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "").trim();
   if (stripped === "") return true;
   if (/function\s+[A-Za-z_$][\w$]*\s*\([^)]*\)\s*{\s*}/m.test(stripped)) return true;
   if (/\([^)]*\)\s*=>\s*{\s*}/m.test(stripped)) return true;
@@ -58,7 +54,6 @@ function isPlaceholderCode(code) {
 
 export default function BattlePage({ comp, players = [], question: questionProp }) {
   const MIN_SUBMIT_SEC = Number(import.meta.env.VITE_MIN_SUBMIT_SEC ?? 180);
-
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const { battleId: routeBattleId } = useParams();
@@ -103,44 +98,32 @@ export default function BattlePage({ comp, players = [], question: questionProp 
   }, [players, user]);
 
   const showComp = isBattle || comp;
-  const loaded = !!question?.id && tests.length > 0;
+  const loaded = !!question?.id && Array.isArray(tests) && tests.length > 0;
 
   function computeFinalScore() {
     const passed = lastSummary?.passed ?? 0;
     const total = lastSummary?.total ?? 0;
     const passedPct = total ? Math.round((passed / total) * 100) : 0;
-    const testsScore = passedPct * 0.5; 
-
+    const testsScore = passedPct * 0.5;
     const allFailed = total > 0 && passed === 0;
-    const placeholder =
-      !code ||
-      /\/\/\s*your\s*code/i.test(code) ||
-      code.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "").trim() === "" ||
-      /function\s+[A-Za-z_$][\w$]*\s*\([^)]*\)\s*{\s*}/m.test(code) ||
-      /\([^)]*\)\s*=>\s*{\s*}/m.test(code);
-
+    const placeholder = isPlaceholderCode(code);
     if (allFailed || placeholder) {
-      return Math.round(testsScore); 
+      return Math.round(testsScore);
     }
-
     const hasTime = timeLabel && timeLabel !== "N/A";
     const hasSpace = spaceLabel && spaceLabel !== "N/A";
-
     const qBestT = normBigO(question?.TimeComplexity || "");
     const qBestS = normBigO(question?.SpaceComplexity || "");
-
     let timeScore = 0;
     if (hasTime) {
       const timeDiff = bigORank(timeLabel) - bigORank(qBestT);
-      timeScore = scoreFromDiff(timeDiff) * 0.25; 
+      timeScore = scoreFromDiff(timeDiff) * 0.25;
     }
-
     let spaceScore = 0;
     if (hasSpace) {
       const spaceDiff = bigORank(spaceLabel) - bigORank(qBestS);
       spaceScore = scoreFromDiff(spaceDiff) * 0.25;
     }
-
     return Math.round(testsScore + timeScore + spaceScore);
   }
 
@@ -166,36 +149,27 @@ export default function BattlePage({ comp, players = [], question: questionProp 
 
   function applyDelta(deltaRow) {
     if (!deltaRow) return;
-
     if (typeof deltaRow.time_limit_sec === "number") setTimeLimitSec(deltaRow.time_limit_sec);
-
     const myRole = roleRef.current;
-
     const aFin = deltaRow.user_a_status === "finished";
     const bFin = deltaRow.user_b_status === "finished";
     const myFin = myRole === "A" ? aFin : bFin;
     const oppFin = myRole === "A" ? bFin : aFin;
-
     setMeFinished(myFin);
     setOpFinished(oppFin);
-
     if (deltaRow.started_at && startMsRef.current === 0) {
       startMsRef.current = new Date(deltaRow.started_at).getTime();
     }
-
     const tA = deltaRow.user_a_finished_at ? new Date(deltaRow.user_a_finished_at).getTime() : Infinity;
     const tB = deltaRow.user_b_finished_at ? new Date(deltaRow.user_b_finished_at).getTime() : Infinity;
     const firstFinishMs = Math.min(tA, tB);
-
     if (Number.isFinite(firstFinishMs) && !(aFin && bFin)) {
       cdStartMsRef.current = firstFinishMs;
       if (!myFin) setCountdownActive(true);
-
       const now = Date.now();
       const left = Math.max(0, Math.ceil(((cdStartMsRef.current + (deltaRow.time_limit_sec || timeLimitSecRef.current) * 1000) - now) / 1000));
       setCountdownLeft(left);
     }
-
     if (aFin && bFin) {
       const fs = computeFinalScore();
       navigateToEnd(fs);
@@ -204,22 +178,15 @@ export default function BattlePage({ comp, players = [], question: questionProp 
 
   useEffect(() => {
     if (!isBattle || !routeBattleId || !user?.id) return;
-
     let cancelled = false;
-
     (async () => {
       const { data: base, error } = await supabase
         .from("active_battles")
         .select("id, question_id, user_a, user_b, started_at, time_limit_sec")
         .eq("id", routeBattleId)
         .maybeSingle();
-
       if (cancelled) return;
-      if (error || !base) {
-        console.error("load base battle failed:", error);
-        return;
-      }
-
+      if (error || !base) return;
       const myId = user?.id || null;
       roleRef.current = base.user_a === myId ? "A" : "B";
       const oppId = roleRef.current === "A" ? base.user_b : base.user_a;
@@ -230,43 +197,31 @@ export default function BattlePage({ comp, players = [], question: questionProp 
           .eq("id", oppId)
           .maybeSingle()
           .then(({ data: prof }) => {
-            const name =
-              prof?.display_name ||
-              [prof?.first_name, prof?.last_name].filter(Boolean).join(" ") ||
-              "Opponent";
+            const name = prof?.display_name || [prof?.first_name, prof?.last_name].filter(Boolean).join(" ") || "Opponent";
             setOpponentName(name);
           })
           .catch(() => setOpponentName("Opponent"));
         oppIdRef.current = oppId;
       }
-
       startMsRef.current = base.started_at ? new Date(base.started_at).getTime() : Date.now();
       setTimeLimitSec(base.time_limit_sec || 120);
-
       if (!questionProp && base.question_id) {
         try {
-          const { question: q, tests: t } = await getQuestionWithTests(base.question_id);
+          const { question: q } = await getQuestionWithTests(base.question_id);
           if (cancelled) return;
           setQuestion(q);
           setCode(q.initialValue ?? "");
-          setTests(Array.isArray(t) ? t : []);
-        } catch (e) {
-          if (!cancelled) {
-            console.error("load question/tests failed:", e);
-            setOutput("Failed to load question/tests");
-          }
+        } catch {
+          if (!cancelled) setOutput("Failed to load question/tests");
         }
       }
     })();
-
     return () => { cancelled = true; };
   }, [isBattle, routeBattleId, user?.id, questionProp]);
 
   useEffect(() => {
     if (!isBattle || !routeBattleId || !user?.id) return;
-
     let stopped = false;
-
     const fetchDelta = async () => {
       const { data, error } = await supabase
         .from("active_battles")
@@ -277,7 +232,6 @@ export default function BattlePage({ comp, players = [], question: questionProp 
       if (error || !data) return;
       applyDelta(data);
     };
-
     fetchDelta();
     const id = setInterval(fetchDelta, POLL_MS);
     return () => { stopped = true; clearInterval(id); };
@@ -288,7 +242,6 @@ export default function BattlePage({ comp, players = [], question: questionProp 
       const now = Date.now();
       const sec = Math.floor((now - startMsRef.current) / 1000);
       setElapsed(sec);
-
       if (countdownActiveRef.current) {
         const left = Math.max(0, Math.ceil(((cdStartMsRef.current + timeLimitSecRef.current * 1000) - now) / 1000));
         setCountdownLeft(left);
@@ -307,17 +260,38 @@ export default function BattlePage({ comp, players = [], question: questionProp 
     setCode(question?.initialValue ?? "");
   }, [question?.id]);
 
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!question?.id) return;
+      try {
+        const { tests: t } = await getQuestionWithTests(question.id);
+        if (!active) return;
+        setTests(Array.isArray(t) ? t : []);
+      } catch {
+        if (active) setTests([]);
+      }
+    })();
+    return () => { active = false; };
+  }, [question?.id]);
+
   const handleRunTests = async () => {
     try {
       setOutput("Running tests...");
       if (!question?.id) { setOutput("No question id"); return; }
-      if (!Array.isArray(tests) || tests.length === 0) { setOutput("No tests found"); return; }
-
+      if (!Array.isArray(tests) || tests.length === 0) {
+        try {
+          const { tests: t } = await getQuestionWithTests(question.id);
+          setTests(Array.isArray(t) ? t : []);
+          if (!t || t.length === 0) { setOutput("No tests found"); return; }
+        } catch {
+          setOutput("Failed to load tests");
+          return;
+        }
+      }
       const res = await runTests({ userCode: code, tests });
-
       setLastSummary(res?.summary || { passed: 0, total: 0 });
       setLastResults(res?.results || []);
-
       const lines = [];
       lines.push(`Passed ${res?.summary?.passed ?? 0} of ${res?.summary?.total ?? 0}`);
       (res?.results || []).slice(0, 50).forEach((r) => {
@@ -330,10 +304,8 @@ export default function BattlePage({ comp, players = [], question: questionProp 
         }
       });
       setOutput(lines.join("\n"));
-
       const allFailed = (res?.summary?.total ?? 0) > 0 && (res?.summary?.passed ?? 0) === 0;
       const placeholder = isPlaceholderCode(code);
-
       if (placeholder || allFailed) {
         setTimeLabel("N/A");
         setSpaceLabel("N/A");
@@ -351,7 +323,6 @@ export default function BattlePage({ comp, players = [], question: questionProp 
   const handleSubmit = async () => {
     if (!question?.id) { setOutput("No question id"); return; }
     if (!Array.isArray(tests) || tests.length === 0) { setOutput("No tests found"); return; }
-
     if (isBattle) {
       const nowSec = Math.floor((Date.now() - startMsRef.current) / 1000);
       if (nowSec < MIN_SUBMIT_SEC) {
@@ -359,13 +330,10 @@ export default function BattlePage({ comp, players = [], question: questionProp 
         return;
       }
     }
-
     if (!lastSummary?.total) {
       await handleRunTests();
     }
-
     const finalScore = computeFinalScore();
-
     if (isBattle && user?.id && routeBattleId) {
       await upsertBattleSubmission({
         battle_id: Number(routeBattleId),
@@ -379,22 +347,17 @@ export default function BattlePage({ comp, players = [], question: questionProp 
         final_score: finalScore,
         elapsed_ms: Math.floor((Date.now() - startMsRef.current) / 1000) * 1000,
       });
-
       const update = roleRef.current === "A"
         ? { user_a_status: "finished", user_a_finished_at: new Date().toISOString() }
         : { user_b_status: "finished", user_b_finished_at: new Date().toISOString() };
-
       const { data: delta } = await supabase
         .from("active_battles")
         .update(update)
         .eq("id", routeBattleId)
         .select("status, started_at, time_limit_sec, user_a_status, user_b_status, user_a_finished_at, user_b_finished_at, finished_at")
         .maybeSingle();
-
       if (delta) applyDelta(delta);
-
       setMeFinished(true);
-
       const oppFinishedNow = roleRef.current === "A"
         ? delta?.user_b_status === "finished"
         : delta?.user_a_status === "finished";
@@ -409,15 +372,31 @@ export default function BattlePage({ comp, players = [], question: questionProp 
       navigateToEnd(finalScore);
     }
   };
+  async function handleQuit() {
+    if (!isBattle) {
+      navigate("/");
+      return;
+    }
+    setMeFinished(true);
+    navigate("/");
+  }
 
   return (
     <div className="battle-shell">
+        <Button
+          top={"35px"}
+          left={"25px"}
+          w={100}
+          bg="#d11a2a"
+          onClick={handleQuit}
+        >
+          Quit
+      </Button>
       <div className="battle-header">
         <Title className="screen-timer" order={2} style={{ color: countdownActive ? "#d11a2a" : undefined }}>
           {countdownActive ? formatTime(countdownLeft) : formatTime(elapsed)}
         </Title>
       </div>
-
       <div className="battle-page">
         <div className="left-panel">
           <div className="players-card">
@@ -430,9 +409,7 @@ export default function BattlePage({ comp, players = [], question: questionProp 
               </div>
               <ProfileImage name={myName} color="red" />
             </div>
-
             {showComp && <div className="vs">VS</div>}
-
             {showComp && (
               <div className="p-slot right">
                 <ProfileImage name={opponentName || players[1]?.name || "Opponent"} color="blue" />
@@ -445,7 +422,6 @@ export default function BattlePage({ comp, players = [], question: questionProp 
               </div>
             )}
           </div>
-
           <div className="question">
             <div className="code">
               <Title order={6}>Code Editor</Title>
@@ -458,7 +434,6 @@ export default function BattlePage({ comp, players = [], question: questionProp 
             </div>
           </div>
         </div>
-
         <div className="right-panel">
           <Button
             variant="filled"
@@ -470,14 +445,12 @@ export default function BattlePage({ comp, players = [], question: questionProp 
           >
             Submit
           </Button>
-
           <div className="panel-section">
             <Title order={6} className="section-title">Question Description</Title>
             <Text className="section-content description" size="lg" mb="md">
               {question?.description ?? ""}
             </Text>
           </div>
-
           <div className="panel-section">
             <Title order={6} className="section-title">Output</Title>
             <pre className="section-content output">{output || ""}</pre>
