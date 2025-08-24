@@ -21,6 +21,23 @@ function pickFn(src) {
   return typeof fn === "function" ? fn : null;
 }
 
+function isTrivialSource(code) {
+  if (!code) return true;
+  const src = String(code);
+  if (/\/\/\s*your\s*code/i.test(src)) return true;
+
+  const stripped = src
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\/\/.*$/gm, "")
+    .trim();
+  if (stripped === "") return true;
+
+  if (/function\s+[A-Za-z_$][\w$]*\s*\([^)]*\)\s*{\s*}/m.test(stripped)) return true;
+  if (/\([^)]*\)\s*=>\s*{\s*}/m.test(stripped)) return true;
+
+  return false;
+}
+
 function measureArg(x) {
   if (x == null) return 0;
   if (typeof x === "string") return x.length;
@@ -32,7 +49,6 @@ function measureArg(x) {
 
 function makeScaler(exampleArgs) {
   const a = Array.isArray(exampleArgs) ? exampleArgs : [exampleArgs];
-  const types = a.map(v => (Array.isArray(v) ? "array" : (typeof v)));
   return function gen(size) {
     return a.map(t => {
       if (Array.isArray(t)) return Array.from({ length: size }, () => 1);
@@ -87,8 +103,11 @@ function pickBigO(ns, ys) {
 function msNow() { return (typeof performance!=="undefined"&&performance.now)?performance.now():Date.now(); }
 
 function estimateTimeComplexityFromCode(code, tests) {
+  if (isTrivialSource(code)) return { label:"N/A" };
+
   const fn = pickFn(code);
   if (!fn) return { label:"N/A" };
+
   const sizes = sizesFromTests(tests);
   const scaler = makeScaler(tests?.[0]?.args ?? [sizes[0]]);
   const times = [];
@@ -110,6 +129,8 @@ function estimateTimeComplexityFromCode(code, tests) {
 }
 
 function estimateSpaceComplexityFromCode(code, tests) {
+  if (isTrivialSource(code)) return { label:"N/A" };
+
   const fn = pickFn(code);
   if (!fn) return { label:"N/A" };
   const sizes = sizesFromTests(tests);

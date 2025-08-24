@@ -10,22 +10,35 @@ import { useState } from "react";
 import { AuthProvider } from "./context/AuthContext";
 import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoute from "./auth/ProtectedRoute";
-import EndBattlePage from "./pages/EndBattlePage";
-import EndPracticePage from "./pages/EndPracticePage";
 
 import PracticePickPage from "./pages/PracticePickPage";
 import LoadingPracticeQuestion from "./pages/LoadingPracticeQuestion";
 
 import BattleListPage from "./pages/BattleListPage";
-import LoadingBattleQuestion from "./pages/LoadingBattleQuestion";
+import WaitingRoomPage from "./pages/WaitingRoomPage";
+import BattlePage from "./pages/BattlePage";
+import EndPracticePage from "./pages/EndPracticePage";
+import EndBattlePage from "./pages/EndBattlePage";
+
+import {
+  postMockBattle,
+  joinMockBattle,
+  forfeitMockBattle,
+} from "./utils/supabaseQueries";
 
 function App() {
   const navigate = useNavigate();
   const [isAuthReady, setAuthReady] = useState(false);
   const [mode, setMode] = useState("Practice");
   const [difficulty, setDifficulty] = useState("Easy");
+  const [opponent, setOpponent] = useState(null);
+  const [battleID, setBattleID] = useState(null);
 
   function handleSelectMode() {
+    if (battleID) {
+      navigate(`/battle/${battleID}`);
+      return;
+    }
     if (mode === "Practice") {
       navigate("/practice");
     } else if (mode === "Battle") {
@@ -33,6 +46,43 @@ function App() {
     } else {
       navigate("/");
     }
+  }
+
+  async function handleStartCoding(activeUser) {
+    if (mode === "Practice") {
+      navigate("/practice");
+    } else if (mode === "Battle") {
+      const joinedBattle = await joinMockBattle(difficulty);
+      if (!joinedBattle) {
+        const battle = await postMockBattle(activeUser, difficulty);
+        setBattleID(battle);
+        navigate("/battle/waiting-room");
+        return;
+      }
+      navigate(`/battle/${joinedBattle}`);
+    }
+  }
+
+  function handleFinishCoding() {
+    navigate("/summary");
+  }
+
+  async function handleOpponentFound(foundOpponent) {
+    setOpponent(foundOpponent);
+    navigate("/battle");
+  }
+
+  async function handleForfeitBattle(activeUser, battleID) {
+    if (!battleID) {
+      navigate("/");
+      return;
+    }
+    const success = await forfeitMockBattle(activeUser, battleID);
+    if (!success) {
+      throw new Error("user quit, but db thinks he is still available");
+    }
+    setBattleID(null);
+    navigate("/");
   }
 
   return (
@@ -48,6 +98,7 @@ function App() {
                     handleSelectMode={handleSelectMode}
                     setMode={setMode}
                     mode={mode}
+                    battleID={battleID}
                   />
                 }
               />
@@ -82,13 +133,25 @@ function App() {
                 }
               />
               <Route
-                path="/battle/:battleId"
+                path="/battle/waiting-room"
                 element={
                   <ProtectedRoute>
-                    <LoadingBattleQuestion />
+                    <WaitingRoomPage
+                      onOpponentFound={handleOpponentFound}
+                      difficulty={difficulty}
+                    />
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/battle/:battleId"
+                element={
+                  <ProtectedRoute>
+                    <BattlePage comp />
+                  </ProtectedRoute>
+                }
+              />
+
               <Route
                 path="/end-practice"
                 element={
@@ -105,6 +168,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+
               <Route
                 path="/profile"
                 element={
