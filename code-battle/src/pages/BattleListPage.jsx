@@ -41,7 +41,9 @@ function BattleListPage() {
       channelRef.current = null;
     }
     if (leave && user?.id) {
-      try { await leaveQueue(user.id); } catch {}
+      try {
+        await leaveQueue(user.id);
+      } catch {}
     }
   }
 
@@ -108,10 +110,15 @@ function BattleListPage() {
     };
   }, []);
 
+  function backToHome() {
+    navigate("/");
+  }
   return (
     <div className="battle-list-page">
+      <Button bottom={"15px"} left={"25px"} w={100} onClick={backToHome}>
+        Back
+      </Button>
       <h1 className="battle-title">Battle</h1>
-
       <div className="battle-cards">
         {modes.map((mode) => (
           <BattleModeCard
@@ -125,10 +132,14 @@ function BattleListPage() {
           />
         ))}
       </div>
-
       <div className="battle-actions">
         {searching ? (
-          <Button className="search-btn" color="red" size="md" onClick={handleCancel}>
+          <Button
+            className="search-btn"
+            color="red"
+            size="md"
+            onClick={handleCancel}
+          >
             Cancel
           </Button>
         ) : (
