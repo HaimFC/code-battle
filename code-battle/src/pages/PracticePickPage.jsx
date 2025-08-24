@@ -13,8 +13,15 @@ function PracticePickPage() {
     navigate(`/practice/${mode}`);
   }
 
+  function backToHome() {
+    navigate("/");
+  }
+
   return (
     <div className="practice-list-page">
+      <Button bottom={"35px"} left={"25px"} w={100} onClick={backToHome}>
+        Back
+      </Button>
       <h1 className="practice-title">Practice</h1>
       <div className="practice-cards">
         {modes.map((mode) => (
