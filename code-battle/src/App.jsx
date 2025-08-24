@@ -36,45 +36,45 @@ function App() {
 
   function handleSelectMode() {
     if (battleID) {
-      navigate(`/code-battle/battle/${battleID}`);
+      navigate(`/battle/${battleID}`);
       return;
     }
     if (mode === "Practice") {
-      navigate("/code-battle/practice");
+      navigate("/practice");
     } else if (mode === "Battle") {
-      navigate("/code-battle/battle");
+      navigate("/battle");
     } else {
-      navigate("/code-battle/");
+      navigate("/");
     }
   }
 
   async function handleStartCoding(activeUser) {
     if (mode === "Practice") {
-      navigate("/code-battle/practice");
+      navigate("/practice");
     } else if (mode === "Battle") {
       const joinedBattle = await joinMockBattle(difficulty);
       if (!joinedBattle) {
         const battle = await postMockBattle(activeUser, difficulty);
         setBattleID(battle);
-        navigate("/code-battle/battle/waiting-room");
+        navigate("/battle/waiting-room");
         return;
       }
-      navigate(`/code-battle/battle/${joinedBattle}`);
+      navigate(`/battle/${joinedBattle}`);
     }
   }
 
   function handleFinishCoding() {
-    navigate("/code-battle/summary");
+    navigate("/summary");
   }
 
   async function handleOpponentFound(foundOpponent) {
     setOpponent(foundOpponent);
-    navigate("/code-battle/battle");
+    navigate("/battle");
   }
 
   async function handleForfeitBattle(activeUser, battleID) {
     if (!battleID) {
-      navigate("/code-battle/");
+      navigate("/");
       return;
     }
     const success = await forfeitMockBattle(activeUser, battleID);
@@ -82,7 +82,7 @@ function App() {
       throw new Error("user quit, but db thinks he is still available");
     }
     setBattleID(null);
-    navigate("/code-battle/");
+    navigate("/");
   }
 
   return (
