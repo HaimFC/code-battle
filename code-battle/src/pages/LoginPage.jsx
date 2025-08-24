@@ -1,58 +1,62 @@
-import { useMockAuth } from "../auth/AuthProvider";
-import { Button, TextInput, Group } from "@mantine/core";
+import { useAuthContext } from "../context/AuthContext";
+import {
+  Button,
+  TextInput,
+  PasswordInput,
+  Stack,
+  Container,
+  Card,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useNavigate } from "react-router";
 
-// TODO: Use supabase handleLogin function
-
-// Login form (uses Supabase Auth).
 export default function LoginPage() {
-  const { handleLogin } = useMockAuth();
+  const { signIn } = useAuthContext();
+  const navigate = useNavigate();
 
   const form = useForm({
     mode: "uncontrolled",
-    initialValues: {
-      email: "",
-      password: "",
-    },
-
+    initialValues: { email: "", password: "" },
     validate: {
-      activeUser: (value) =>
-        /^[a-zA-Z].{1,}$/.test(value) ? null : "Invalid userName",
+      email: (value) => (/^\S+@\S+\.\S+$/.test(value) ? null : "Invalid email"),
+      password: (value) => (value.length >= 6 ? null : "Password too short"),
     },
-    password: (value) =>
-      /^[a-zA-Z].{1,}$/.test(value) ? null : "Invalid password",
   });
 
   return (
-    <form
-      style={{ display: "flex", marginTop: "0.25rem" }}
-      onSubmit={form.onSubmit((values) =>
-        handleLogin(values.email, values.password)
-      )}
-    >
-      <Group>
-        <TextInput
-          w={200}
-          withAsterisk
-          placeholder="Enter email"
-          key={form.key("email")}
-          {...form.getInputProps("email")}
-        />
-        <TextInput
-          w={200}
-          withAsterisk
-          placeholder="Enter password"
-          key={form.key("password")}
-          {...form.getInputProps("password")}
-        />
-      </Group>
+    <Container size={"390px"}>
+      <Card radius={"10px"}>
+        <form
+          style={{ display: "flex", marginTop: "0.25rem" }}
+          onSubmit={form.onSubmit(async (values) => {
+            try {
+              await signIn(values.email, values.password);
+              navigate("/");
+            } catch (err) {
+              alert("Error " + err.message);
+            }
+          })}
+        >
+          <Stack>
+            <TextInput
+              w={330}
+              withAsterisk
+              placeholder="Enter email"
+              key={form.key("email")}
+              {...form.getInputProps("email")}
+            />
+            <PasswordInput
+              w={330}
+              withAsterisk
+              placeholder="Enter password"
+              key={form.key("password")}
+              {...form.getInputProps("password")}
+            />
 
-      <Button
-        style={{ alignSelf: "flex-start", marginLeft: "0.1rem" }}
-        type="submit"
-      >
-        Submit
-      </Button>
-    </form>
+            <Button type="submit">Submit</Button>
+          </Stack>
+        </form>
+      </Card>
+    </Container>
   );
 }

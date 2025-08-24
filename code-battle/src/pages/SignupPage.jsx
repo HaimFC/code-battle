@@ -1,55 +1,104 @@
-import { useMockAuth } from "../auth/AuthProvider";
-import { Button, TextInput } from "@mantine/core";
+// pages/SignUpPage.jsx
+import { useAuthContext } from "../context/AuthContext";
+import {
+  Button,
+  TextInput,
+  PasswordInput,
+  Card,
+  Container,
+  Stack,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useNavigate } from "react-router";
 
-// TODO: Use supabase handleLogin function
-
-// Login form (uses Supabase Auth).
-export default function LoginPage() {
-  const { handleSignUp } = useMockAuth();
+export default function SignUpPage() {
+  const { signUp } = useAuthContext();
+  const navigate = useNavigate();
 
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
       email: "",
       password: "",
+      displayName: "",
+      firstName: "",
+      lastName: "",
+      phone: "",
     },
-
     validate: {
-      activeUser: (value) =>
-        /^[a-zA-Z].{1,}$/.test(value) ? null : "Invalid userName",
+      email: (v) => (/^\S+@\S+\.\S+$/.test(v) ? null : "Wrong mail"),
+      password: (v) => (v.length >= 6 ? null : "Password too short"),
+      displayName: (v) => (v.trim().length >= 2 ? null : "Nickname too short"),
+      firstName: (v) => (v ? null : null), 
+      lastName: (v) => (v ? null : null),  
+      phone: (v) => (v && !/^\+?[0-9\s\-()]{6,}$/.test(v) ? "Invalid phone" : null),
     },
-    password: (value) =>
-      /^[a-zA-Z].{1,}$/.test(value) ? null : "Invalid password",
   });
 
   return (
-    <form
-      style={{ display: "flex", marginTop: "0.25rem" }}
-      onSubmit={form.onSubmit((values) =>
-        handleSignUp(values.email, values.password)
-      )}
-    >
-      <TextInput
-        w={200}
-        withAsterisk
-        placeholder="Enter email"
-        key={form.key("email")}
-        {...form.getInputProps("email")}
-      />
-      <TextInput
-        w={200}
-        withAsterisk
-        placeholder="Enter password"
-        key={form.key("password")}
-        {...form.getInputProps("password")}
-      />
-      <Button
-        style={{ alignSelf: "flex-start", marginLeft: "0.1rem" }}
-        type="submit"
-      >
-        Submit
-      </Button>
-    </form>
+    <Container size={"390px"}>
+      <Card radius={"10px"}>
+        <form
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.5rem",
+            maxWidth: 360,
+          }}
+          onSubmit={form.onSubmit(async (values) => {
+            try {
+              await signUp({
+                email: values.email,
+                password: values.password,
+                displayName: values.displayName,
+                firstName: values.firstName,
+                lastName: values.lastName,
+                phone: values.phone,
+              });
+              navigate("/login");
+            } catch (err) {
+              alert("Error " + (err?.message || "Unknown"));
+            }
+          })}
+        >
+          <Stack>
+            <TextInput
+              withAsterisk
+              placeholder="Email"
+              key={form.key("email")}
+              {...form.getInputProps("email")}
+            />
+            <PasswordInput
+              withAsterisk
+              placeholder="Password"
+              key={form.key("password")}
+              {...form.getInputProps("password")}
+            />
+            <TextInput
+              withAsterisk
+              placeholder="Nickname"
+              key={form.key("displayName")}
+              {...form.getInputProps("displayName")}
+            />
+            <TextInput
+              placeholder="First name"
+              key={form.key("firstName")}
+              {...form.getInputProps("firstName")}
+            />
+            <TextInput
+              placeholder="Last name"
+              key={form.key("lastName")}
+              {...form.getInputProps("lastName")}
+            />
+            <TextInput
+              placeholder="Phone"
+              key={form.key("phone")}
+              {...form.getInputProps("phone")}
+            />
+          </Stack>
+          <Button type="submit">Create Account</Button>
+        </form>
+      </Card>
+    </Container>
   );
 }

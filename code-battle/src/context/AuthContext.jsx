@@ -1,12 +1,11 @@
-// Stores logged-in user data (Supabase Auth).
-
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { signIn, signOut, signUp, onAuthChange, getCurrentUser } from '../api/auth';
+// context/AuthContext.jsx
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { signIn, signOut as supaSignOut, signUp, onAuthChange, getCurrentUser } from "../api/auth";
 
 const AuthContext = createContext(null);
 
-function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);  
+function AuthProvider({ children, onAuthReady }) {
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,11 +16,12 @@ function AuthProvider({ children }) {
         setUser(u ?? null);
       } finally {
         setLoading(false);
+        onAuthReady?.();
       }
       unsubscribe = onAuthChange(setUser);
     })();
     return () => unsubscribe();
-  }, []);
+  }, [onAuthReady]);
 
   const value = {
     user,
@@ -29,7 +29,7 @@ function AuthProvider({ children }) {
     signIn,
     signUp,
     signOut: async () => {
-      await signOut();
+      await supaSignOut();
       setUser(null);
     },
   };
@@ -37,10 +37,10 @@ function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
- function useAuthContext() {
+function useAuthContext() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuthContext must be used within <AuthProvider>');
+  if (!ctx) throw new Error("useAuthContext must be used within <AuthProvider>");
   return ctx;
 }
 
-export { useAuthContext, AuthProvider }
+export { useAuthContext, AuthProvider };

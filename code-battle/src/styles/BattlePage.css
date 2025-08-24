@@ -26,7 +26,6 @@
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
   gap: 24px;
-  width: 100%;
   flex: 1 1 auto;
   padding: 0 24px 24px;
   box-sizing: border-box;
@@ -96,6 +95,7 @@
   gap: 16px;
   overflow: hidden;
   min-height: 0;
+  height: 100%;
 }
 
 .code {
@@ -121,7 +121,7 @@
   height: 100% !important;
   min-height: 0;
   border-radius: 12px !important;
-  border: 1px solid #1f2a44 !important;
+  /* border: 1px solid #1f2a44 !important; */
   background: #0a1020 !important;
   color: #e5e7eb !important;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
