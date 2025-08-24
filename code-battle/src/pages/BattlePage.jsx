@@ -4,18 +4,12 @@ import CodeEditor from "../components/CodeEditor";
 import ProfileImage from "../components/ProfileImage";
 import { useState, useEffect, useRef, useMemo } from "react";
 import "../styles/BattlePage.css";
-import {
-  getQuestionWithTests,
-  upsertBattleSubmission,
-} from "../utils/supabaseQueries";
+import { getQuestionWithTests, upsertBattleSubmission } from "../utils/supabaseQueries";
 import { runTests } from "../api/judge0";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "../api/supabaseClient";
 import { useAuthContext } from "../context/AuthContext";
-import {
-  estimateTimeComplexityFromCode,
-  estimateSpaceComplexityFromCode,
-} from "../utils/complexity";
+import { estimateTimeComplexityFromCode, estimateSpaceComplexityFromCode } from "../utils/complexity";
 
 const POLL_MS = 1200;
 
@@ -29,33 +23,14 @@ function formatTime(total) {
 function normBigO(s) {
   if (!s) return "";
   const t = String(s).toLowerCase().replace(/\s+/g, "");
-  const map = {
-    "o(1)": "O(1)",
-    "o(logn)": "O(log n)",
-    "o(n)": "O(n)",
-    "o(nlogn)": "O(n log n)",
-    "o(n^2)": "O(n^2)",
-    "o(n2)": "O(n^2)",
-    "o(n^3)": "O(n^3)",
-    "o(2^n)": "O(2^n)",
-    "o(n!)": "O(n!)",
-  };
+  const map = { "o(1)":"O(1)","o(logn)":"O(log n)","o(n)":"O(n)","o(nlogn)":"O(n log n)","o(n^2)":"O(n^2)","o(n2)":"O(n^2)","o(n^3)":"O(n^3)","o(2^n)":"O(2^n)","o(n!)":"O(n!)" };
   if (map[t]) return map[t];
   if (/o\(.+?\)/.test(t)) return "O(" + t.slice(2, -1) + ")";
   return s;
 }
 function bigORank(s) {
   const v = normBigO(s);
-  const order = [
-    "O(1)",
-    "O(log n)",
-    "O(n)",
-    "O(n log n)",
-    "O(n^2)",
-    "O(n^3)",
-    "O(2^n)",
-    "O(n!)",
-  ];
+  const order = ["O(1)","O(log n)","O(n)","O(n log n)","O(n^2)","O(n^3)","O(2^n)","O(n!)"];
   const i = order.indexOf(v);
   return i >= 0 ? i : 3;
 }
@@ -70,22 +45,14 @@ function isPlaceholderCode(code) {
   if (!code) return true;
   const src = String(code);
   if (/\/\/\s*your\s*code/i.test(src)) return true;
-  const stripped = src
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/\/\/.*$/gm, "")
-    .trim();
+  const stripped = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "").trim();
   if (stripped === "") return true;
-  if (/function\s+[A-Za-z_$][\w$]*\s*\([^)]*\)\s*{\s*}/m.test(stripped))
-    return true;
+  if (/function\s+[A-Za-z_$][\w$]*\s*\([^)]*\)\s*{\s*}/m.test(stripped)) return true;
   if (/\([^)]*\)\s*=>\s*{\s*}/m.test(stripped)) return true;
   return false;
 }
 
-export default function BattlePage({
-  comp,
-  players = [],
-  question: questionProp,
-}) {
+export default function BattlePage({ comp, players = [], question: questionProp }) {
   const MIN_SUBMIT_SEC = Number(import.meta.env.VITE_MIN_SUBMIT_SEC ?? 180);
   const navigate = useNavigate();
   const { user } = useAuthContext();
@@ -120,12 +87,8 @@ export default function BattlePage({
   const countdownActiveRef = useRef(false);
   const timeLimitSecRef = useRef(120);
 
-  useEffect(() => {
-    countdownActiveRef.current = countdownActive;
-  }, [countdownActive]);
-  useEffect(() => {
-    timeLimitSecRef.current = timeLimitSec;
-  }, [timeLimitSec]);
+  useEffect(() => { countdownActiveRef.current = countdownActive; }, [countdownActive]);
+  useEffect(() => { timeLimitSecRef.current = timeLimitSec; }, [timeLimitSec]);
 
   const myName = useMemo(() => {
     if (players[0]?.name) return players[0].name;
@@ -165,16 +128,10 @@ export default function BattlePage({
   }
 
   function navigateToEnd(finalScore, elapsedMsOverride) {
-    const sid =
-      (crypto?.randomUUID?.() || Math.random().toString(36).slice(2)) +
-      "-" +
-      (question?.id || "q");
+    const sid = (crypto?.randomUUID?.() || Math.random().toString(36).slice(2)) + "-" + (question?.id || "q");
     const payload = {
       code,
-      elapsedMs:
-        typeof elapsedMsOverride === "number"
-          ? elapsedMsOverride
-          : elapsed * 1000,
+      elapsedMs: typeof elapsedMsOverride === "number" ? elapsedMsOverride : elapsed * 1000,
       summary: lastSummary,
       results: lastResults,
       tests,
@@ -184,20 +141,15 @@ export default function BattlePage({
       finalScore,
     };
     if (isBattle) {
-      navigate(`/code-battle/end-battle?sid=${encodeURIComponent(sid)}`, {
-        state: { ...payload, battleId: Number(routeBattleId) },
-      });
+      navigate(`/end-battle?sid=${encodeURIComponent(sid)}`, { state: { ...payload, battleId: Number(routeBattleId) } });
     } else {
-      navigate(`/code-battle/end-practice?sid=${encodeURIComponent(sid)}`, {
-        state: payload,
-      });
+      navigate(`/end-practice?sid=${encodeURIComponent(sid)}`, { state: payload });
     }
   }
 
   function applyDelta(deltaRow) {
     if (!deltaRow) return;
-    if (typeof deltaRow.time_limit_sec === "number")
-      setTimeLimitSec(deltaRow.time_limit_sec);
+    if (typeof deltaRow.time_limit_sec === "number") setTimeLimitSec(deltaRow.time_limit_sec);
     const myRole = roleRef.current;
     const aFin = deltaRow.user_a_status === "finished";
     const bFin = deltaRow.user_b_status === "finished";
@@ -208,26 +160,14 @@ export default function BattlePage({
     if (deltaRow.started_at && startMsRef.current === 0) {
       startMsRef.current = new Date(deltaRow.started_at).getTime();
     }
-    const tA = deltaRow.user_a_finished_at
-      ? new Date(deltaRow.user_a_finished_at).getTime()
-      : Infinity;
-    const tB = deltaRow.user_b_finished_at
-      ? new Date(deltaRow.user_b_finished_at).getTime()
-      : Infinity;
+    const tA = deltaRow.user_a_finished_at ? new Date(deltaRow.user_a_finished_at).getTime() : Infinity;
+    const tB = deltaRow.user_b_finished_at ? new Date(deltaRow.user_b_finished_at).getTime() : Infinity;
     const firstFinishMs = Math.min(tA, tB);
     if (Number.isFinite(firstFinishMs) && !(aFin && bFin)) {
       cdStartMsRef.current = firstFinishMs;
       if (!myFin) setCountdownActive(true);
       const now = Date.now();
-      const left = Math.max(
-        0,
-        Math.ceil(
-          (cdStartMsRef.current +
-            (deltaRow.time_limit_sec || timeLimitSecRef.current) * 1000 -
-            now) /
-            1000
-        )
-      );
+      const left = Math.max(0, Math.ceil(((cdStartMsRef.current + (deltaRow.time_limit_sec || timeLimitSecRef.current) * 1000) - now) / 1000));
       setCountdownLeft(left);
     }
     if (aFin && bFin) {
@@ -257,18 +197,13 @@ export default function BattlePage({
           .eq("id", oppId)
           .maybeSingle()
           .then(({ data: prof }) => {
-            const name =
-              prof?.display_name ||
-              [prof?.first_name, prof?.last_name].filter(Boolean).join(" ") ||
-              "Opponent";
+            const name = prof?.display_name || [prof?.first_name, prof?.last_name].filter(Boolean).join(" ") || "Opponent";
             setOpponentName(name);
           })
           .catch(() => setOpponentName("Opponent"));
         oppIdRef.current = oppId;
       }
-      startMsRef.current = base.started_at
-        ? new Date(base.started_at).getTime()
-        : Date.now();
+      startMsRef.current = base.started_at ? new Date(base.started_at).getTime() : Date.now();
       setTimeLimitSec(base.time_limit_sec || 120);
       if (!questionProp && base.question_id) {
         try {
@@ -281,9 +216,7 @@ export default function BattlePage({
         }
       }
     })();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [isBattle, routeBattleId, user?.id, questionProp]);
 
   useEffect(() => {
@@ -292,9 +225,7 @@ export default function BattlePage({
     const fetchDelta = async () => {
       const { data, error } = await supabase
         .from("active_battles")
-        .select(
-          "status, started_at, time_limit_sec, user_a_status, user_b_status, user_a_finished_at, user_b_finished_at, finished_at"
-        )
+        .select("status, started_at, time_limit_sec, user_a_status, user_b_status, user_a_finished_at, user_b_finished_at, finished_at")
         .eq("id", routeBattleId)
         .maybeSingle();
       if (stopped) return;
@@ -303,10 +234,7 @@ export default function BattlePage({
     };
     fetchDelta();
     const id = setInterval(fetchDelta, POLL_MS);
-    return () => {
-      stopped = true;
-      clearInterval(id);
-    };
+    return () => { stopped = true; clearInterval(id); };
   }, [isBattle, routeBattleId, user?.id]);
 
   useEffect(() => {
@@ -315,17 +243,11 @@ export default function BattlePage({
       const sec = Math.floor((now - startMsRef.current) / 1000);
       setElapsed(sec);
       if (countdownActiveRef.current) {
-        const left = Math.max(
-          0,
-          Math.ceil(
-            (cdStartMsRef.current + timeLimitSecRef.current * 1000 - now) / 1000
-          )
-        );
+        const left = Math.max(0, Math.ceil(((cdStartMsRef.current + timeLimitSecRef.current * 1000) - now) / 1000));
         setCountdownLeft(left);
         if (left === 0) {
           const fs = computeFinalScore();
-          const elapsedOverride =
-            Math.floor((now - startMsRef.current) / 1000) * 1000;
+          const elapsedOverride = Math.floor((now - startMsRef.current) / 1000) * 1000;
           navigateToEnd(fs, elapsedOverride);
         }
       }
@@ -350,26 +272,18 @@ export default function BattlePage({
         if (active) setTests([]);
       }
     })();
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [question?.id]);
 
   const handleRunTests = async () => {
     try {
       setOutput("Running tests...");
-      if (!question?.id) {
-        setOutput("No question id");
-        return;
-      }
+      if (!question?.id) { setOutput("No question id"); return; }
       if (!Array.isArray(tests) || tests.length === 0) {
         try {
           const { tests: t } = await getQuestionWithTests(question.id);
           setTests(Array.isArray(t) ? t : []);
-          if (!t || t.length === 0) {
-            setOutput("No tests found");
-            return;
-          }
+          if (!t || t.length === 0) { setOutput("No tests found"); return; }
         } catch {
           setOutput("Failed to load tests");
           return;
@@ -379,9 +293,7 @@ export default function BattlePage({
       setLastSummary(res?.summary || { passed: 0, total: 0 });
       setLastResults(res?.results || []);
       const lines = [];
-      lines.push(
-        `Passed ${res?.summary?.passed ?? 0} of ${res?.summary?.total ?? 0}`
-      );
+      lines.push(`Passed ${res?.summary?.passed ?? 0} of ${res?.summary?.total ?? 0}`);
       (res?.results || []).slice(0, 50).forEach((r) => {
         const tag = r.passed ? "OK" : "FAIL";
         lines.push(`#${r.i} ${tag} ${r.time_ms}ms`);
@@ -392,8 +304,7 @@ export default function BattlePage({
         }
       });
       setOutput(lines.join("\n"));
-      const allFailed =
-        (res?.summary?.total ?? 0) > 0 && (res?.summary?.passed ?? 0) === 0;
+      const allFailed = (res?.summary?.total ?? 0) > 0 && (res?.summary?.passed ?? 0) === 0;
       const placeholder = isPlaceholderCode(code);
       if (placeholder || allFailed) {
         setTimeLabel("N/A");
@@ -410,14 +321,8 @@ export default function BattlePage({
   };
 
   const handleSubmit = async () => {
-    if (!question?.id) {
-      setOutput("No question id");
-      return;
-    }
-    if (!Array.isArray(tests) || tests.length === 0) {
-      setOutput("No tests found");
-      return;
-    }
+    if (!question?.id) { setOutput("No question id"); return; }
+    if (!Array.isArray(tests) || tests.length === 0) { setOutput("No tests found"); return; }
     if (isBattle) {
       const nowSec = Math.floor((Date.now() - startMsRef.current) / 1000);
       if (nowSec < MIN_SUBMIT_SEC) {
@@ -442,38 +347,25 @@ export default function BattlePage({
         final_score: finalScore,
         elapsed_ms: Math.floor((Date.now() - startMsRef.current) / 1000) * 1000,
       });
-      const update =
-        roleRef.current === "A"
-          ? {
-              user_a_status: "finished",
-              user_a_finished_at: new Date().toISOString(),
-            }
-          : {
-              user_b_status: "finished",
-              user_b_finished_at: new Date().toISOString(),
-            };
+      const update = roleRef.current === "A"
+        ? { user_a_status: "finished", user_a_finished_at: new Date().toISOString() }
+        : { user_b_status: "finished", user_b_finished_at: new Date().toISOString() };
       const { data: delta } = await supabase
         .from("active_battles")
         .update(update)
         .eq("id", routeBattleId)
-        .select(
-          "status, started_at, time_limit_sec, user_a_status, user_b_status, user_a_finished_at, user_b_finished_at, finished_at"
-        )
+        .select("status, started_at, time_limit_sec, user_a_status, user_b_status, user_a_finished_at, user_b_finished_at, finished_at")
         .maybeSingle();
       if (delta) applyDelta(delta);
       setMeFinished(true);
-      const oppFinishedNow =
-        roleRef.current === "A"
-          ? delta?.user_b_status === "finished"
-          : delta?.user_a_status === "finished";
+      const oppFinishedNow = roleRef.current === "A"
+        ? delta?.user_b_status === "finished"
+        : delta?.user_a_status === "finished";
       if (oppFinishedNow) {
         navigateToEnd(finalScore);
       } else if (!countdownActiveRef.current) {
         setCountdownActive(true);
-        const finTs =
-          roleRef.current === "A"
-            ? delta?.user_a_finished_at
-            : delta?.user_b_finished_at;
+        const finTs = roleRef.current === "A" ? delta?.user_a_finished_at : delta?.user_b_finished_at;
         cdStartMsRef.current = finTs ? new Date(finTs).getTime() : Date.now();
       }
     } else {
@@ -482,30 +374,26 @@ export default function BattlePage({
   };
   async function handleQuit() {
     if (!isBattle) {
-      navigate("/code-battle/");
+      navigate("/");
       return;
     }
     setMeFinished(true);
-    navigate("/code-battle/");
+    navigate("/");
   }
 
   return (
     <div className="battle-shell">
-      <Button
-        top={"35px"}
-        left={"25px"}
-        w={100}
-        bg="#d11a2a"
-        onClick={handleQuit}
-      >
-        Quit
+        <Button
+          top={"35px"}
+          left={"25px"}
+          w={100}
+          bg="#d11a2a"
+          onClick={handleQuit}
+        >
+          Quit
       </Button>
       <div className="battle-header">
-        <Title
-          className="screen-timer"
-          order={2}
-          style={{ color: countdownActive ? "#d11a2a" : undefined }}
-        >
+        <Title className="screen-timer" order={2} style={{ color: countdownActive ? "#d11a2a" : undefined }}>
           {countdownActive ? formatTime(countdownLeft) : formatTime(elapsed)}
         </Title>
       </div>
@@ -524,14 +412,9 @@ export default function BattlePage({
             {showComp && <div className="vs">VS</div>}
             {showComp && (
               <div className="p-slot right">
-                <ProfileImage
-                  name={opponentName || players[1]?.name || "Opponent"}
-                  color="blue"
-                />
+                <ProfileImage name={opponentName || players[1]?.name || "Opponent"} color="blue" />
                 <div className="p-info">
-                  <Title order={5}>
-                    {opponentName || players[1]?.name || "Opponent"}
-                  </Title>
+                  <Title order={5}>{opponentName || players[1]?.name || "Opponent"}</Title>
                   <Text size="sm" c="dimmed">
                     {opFinished ? "finished" : "coding"}
                   </Text>
@@ -546,9 +429,7 @@ export default function BattlePage({
                 <CodeEditor code={code} setCode={setCode} />
               </div>
               <div className="code-actions">
-                <Button fullWidth onClick={handleRunTests} disabled={!loaded}>
-                  Run Tests
-                </Button>
+                <Button fullWidth onClick={handleRunTests} disabled={!loaded}>Run Tests</Button>
               </div>
             </div>
           </div>
@@ -565,17 +446,13 @@ export default function BattlePage({
             Submit
           </Button>
           <div className="panel-section">
-            <Title order={6} className="section-title">
-              Question Description
-            </Title>
+            <Title order={6} className="section-title">Question Description</Title>
             <Text className="section-content description" size="lg" mb="md">
               {question?.description ?? ""}
             </Text>
           </div>
           <div className="panel-section">
-            <Title order={6} className="section-title">
-              Output
-            </Title>
+            <Title order={6} className="section-title">Output</Title>
             <pre className="section-content output">{output || ""}</pre>
           </div>
         </div>

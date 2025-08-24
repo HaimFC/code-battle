@@ -9,11 +9,11 @@ function PracticePickPage() {
   const navigate = useNavigate();
 
   function handleEnter(mode) {
-    navigate(`/code-battle/practice/${mode}`);
+    navigate(`/practice/${mode}`);
   }
 
   function backToHome() {
-    navigate("/code-battle/");
+    navigate("/");
   }
 
   return (

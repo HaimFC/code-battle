@@ -1,1 +1,0 @@
-// Mantine theme customization (colors, spacing...)
