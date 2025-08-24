@@ -103,7 +103,6 @@ export async function getRandomQuestionByDifficulty(diffKey) {
 
 export async function enqueueAndMatch(userId, modesSet) {
   const diffs = Array.from(modesSet);
-
   const { data, error } = await supabase.rpc("enqueue_and_match", {
     p_user: userId,
     p_diffs: diffs,
@@ -135,14 +134,14 @@ export async function getMockLeaderboard() {
     { displayName: "adam", score: 700 },
     { displayName: "bertrude", score: 600 },
   ];
-
   return data;
 }
-export async function getMockOpponent(difficulty) {
+
+export async function getMockOpponent() {
   return { displayName: "alex", score: 650 };
 }
 
-async function getMockRandomQuestionByDifficulty(difficulty) {
+async function getMockRandomQuestionByDifficulty() {
   return "two sum";
 }
 
@@ -152,11 +151,11 @@ export async function postMockBattle(activeUser, difficulty) {
   return 3;
 }
 
-export async function joinMockBattle(difficulty) {
+export async function joinMockBattle() {
   console.log("no battle found for difficulty");
 }
 
-export async function getMockBattleByID(battleID) {
+export async function getMockBattleByID() {
   return {
     userA: { displayName: "john" },
     userB: { displayName: "alex" },
@@ -191,6 +190,7 @@ export async function getProfile(userId) {
   return data;
 }
 
-export async function getActiveBattle(activeUser) {
+export async function getActiveBattle() {
   const battleID = 3;
+  return battleID;
 }
