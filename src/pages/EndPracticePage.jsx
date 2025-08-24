@@ -161,7 +161,7 @@ export default function EndPracticePage() {
   const navigate = useNavigate();
 
   function backToHome() {
-    navigate("/");
+    navigate("/code-battle/");
   }
 
   return (

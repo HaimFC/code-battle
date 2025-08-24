@@ -111,7 +111,7 @@ function BattleListPage() {
   }, []);
 
   function backToHome() {
-    navigate("/");
+    navigate("/code-battle/");
   }
   return (
     <div className="battle-list-page">

@@ -243,7 +243,7 @@ export default function EndBattlePage() {
 
   const navigate = useNavigate();
   function backToHome() {
-    navigate("/");
+    navigate("/code-battle/");
   }
 
   return (

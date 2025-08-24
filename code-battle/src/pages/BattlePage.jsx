@@ -482,11 +482,11 @@ export default function BattlePage({
   };
   async function handleQuit() {
     if (!isBattle) {
-      navigate("/code-battle/");
+      navigate("/code-battle/code-battle/");
       return;
     }
     setMeFinished(true);
-    navigate("/code-battle/");
+    navigate("/code-battle/code-battle/");
   }
 
   return (

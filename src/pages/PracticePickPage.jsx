@@ -13,7 +13,7 @@ function PracticePickPage() {
   }
 
   function backToHome() {
-    navigate("/");
+    navigate("/code-battle/");
   }
 
   return (
