@@ -60,9 +60,10 @@ export default function SignUpPage() {
                 lastName: values.lastName,
                 phone: values.phone,
               });
+              alert("Check your email to register");
               navigate("/login");
             } catch (err) {
-              alert("Error " + (err?.message || "Unknown"));
+              alert("Error: " + (err?.message || "Unknown"));
             }
           })}
         >
