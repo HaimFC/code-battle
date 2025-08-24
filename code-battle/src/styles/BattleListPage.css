@@ -10,9 +10,7 @@
       transparent 70%
     ),
     linear-gradient(180deg, #0f1224 0%, #0b0e1a 100%);
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
+  min-height: 93vh;
 }
 
 .battle-title {
