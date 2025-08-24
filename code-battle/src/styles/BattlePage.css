@@ -93,8 +93,7 @@
   flex-direction: column;
   gap: 16px;
   overflow: hidden;
-  min-height: 0;
-  height: 100%;
+  min-height: 600px;
 }
 
 .code {
