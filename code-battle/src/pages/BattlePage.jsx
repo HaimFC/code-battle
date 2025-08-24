@@ -184,11 +184,11 @@ export default function BattlePage({
       finalScore,
     };
     if (isBattle) {
-      navigate(`/code-battle/end-battle?sid=${encodeURIComponent(sid)}`, {
+      navigate(`/end-battle?sid=${encodeURIComponent(sid)}`, {
         state: { ...payload, battleId: Number(routeBattleId) },
       });
     } else {
-      navigate(`/code-battle/end-practice?sid=${encodeURIComponent(sid)}`, {
+      navigate(`/end-practice?sid=${encodeURIComponent(sid)}`, {
         state: payload,
       });
     }
@@ -482,11 +482,11 @@ export default function BattlePage({
   };
   async function handleQuit() {
     if (!isBattle) {
-      navigate("/code-battle/");
+      navigate("/");
       return;
     }
     setMeFinished(true);
-    navigate("/code-battle/");
+    navigate("/");
   }
 
   return (

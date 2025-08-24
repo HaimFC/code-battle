@@ -58,7 +58,7 @@ function BattleListPage() {
           const row = payload.new;
           if (!row) return;
           if (row.user_a === user.id || row.user_b === user.id) {
-            cleanup(true).then(() => navigate(`/code-battle/battle/${row.id}`));
+            cleanup(true).then(() => navigate(`/battle/${row.id}`));
           }
         }
       )
@@ -78,7 +78,7 @@ function BattleListPage() {
       const res = await enqueueAndMatch(user.id, onModes);
       if (res) {
         await cleanup(true);
-        navigate(`/code-battle/battle/${res.battleId}`);
+        navigate(`/battle/${res.battleId}`);
         return;
       }
       pollRef.current = window.setInterval(async () => {
@@ -86,7 +86,7 @@ function BattleListPage() {
           const tryAgain = await enqueueAndMatch(user.id, onModes);
           if (tryAgain) {
             await cleanup(true);
-            navigate(`/code-battle/battle/${tryAgain.battleId}`);
+            navigate(`/battle/${tryAgain.battleId}`);
           }
         } catch {}
       }, 5000);
@@ -111,7 +111,7 @@ function BattleListPage() {
   }, []);
 
   function backToHome() {
-    navigate("/code-battle/");
+    navigate("/");
   }
   return (
     <div className="battle-list-page">

@@ -3,8 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://HaimFC.github.io/code-battle/",
-
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
