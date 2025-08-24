@@ -16,7 +16,7 @@ export default function SignUpPage() {
   const navigate = useNavigate();
 
   if (user) {
-    navigate("/code-battle/code-battle/");
+    navigate("/code-battle/");
   }
 
   const form = useForm({
@@ -61,7 +61,7 @@ export default function SignUpPage() {
                 phone: values.phone,
               });
               alert("Check your email to register");
-              navigate("/code-battle/code-battle/login");
+              navigate("/code-battle/login");
             } catch (err) {
               alert("Error: " + (err?.message || "Unknown"));
             }

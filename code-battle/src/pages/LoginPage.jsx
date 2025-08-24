@@ -15,7 +15,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   if (user) {
-    navigate("/code-battle/code-battle/");
+    navigate("/code-battle/");
   }
 
   const form = useForm({
@@ -35,7 +35,7 @@ export default function LoginPage() {
           onSubmit={form.onSubmit(async (values) => {
             try {
               await signIn(values.email, values.password);
-              navigate("/code-battle/code-battle/");
+              navigate("/code-battle/");
             } catch (err) {
               alert("Error: " + err.message);
             }

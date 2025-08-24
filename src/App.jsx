@@ -40,23 +40,23 @@ function App() {
       return;
     }
     if (mode === "Practice") {
-      navigate("/code-battle/code-battle/practice");
+      navigate("/code-battle/practice");
     } else if (mode === "Battle") {
-      navigate("/code-battle/code-battle/battle");
+      navigate("/code-battle/battle");
     } else {
-      navigate("/code-battle/code-battle/");
+      navigate("/code-battle/");
     }
   }
 
   async function handleStartCoding(activeUser) {
     if (mode === "Practice") {
-      navigate("/code-battle/code-battle/practice");
+      navigate("/code-battle/practice");
     } else if (mode === "Battle") {
       const joinedBattle = await joinMockBattle(difficulty);
       if (!joinedBattle) {
         const battle = await postMockBattle(activeUser, difficulty);
         setBattleID(battle);
-        navigate("/code-battle/code-battle/battle/waiting-room");
+        navigate("/code-battle/battle/waiting-room");
         return;
       }
       navigate(`/code-battle/battle/${joinedBattle}`);
@@ -64,17 +64,17 @@ function App() {
   }
 
   function handleFinishCoding() {
-    navigate("/code-battle/code-battle/summary");
+    navigate("/code-battle/summary");
   }
 
   async function handleOpponentFound(foundOpponent) {
     setOpponent(foundOpponent);
-    navigate("/code-battle/code-battle/battle");
+    navigate("/code-battle/battle");
   }
 
   async function handleForfeitBattle(activeUser, battleID) {
     if (!battleID) {
-      navigate("/code-battle/code-battle/");
+      navigate("/code-battle/");
       return;
     }
     const success = await forfeitMockBattle(activeUser, battleID);
@@ -82,7 +82,7 @@ function App() {
       throw new Error("user quit, but db thinks he is still available");
     }
     setBattleID(null);
-    navigate("/code-battle/code-battle/");
+    navigate("/code-battle/");
   }
 
   return (

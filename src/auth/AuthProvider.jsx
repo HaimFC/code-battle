@@ -23,12 +23,12 @@ export function AuthProvider({ onAuthReady, children }) {
     const mockUser = { id: 1, displayName: "john", score: 0 };
     localStorage.setItem("activeUser", JSON.stringify(mockUser));
     setActiveUser(mockUser);
-    navigate("/code-battle/");
+    navigate("/");
   };
 
   const handleLogout = async () => {
     setActiveUser(null);
-    navigate("/code-battle/");
+    navigate("/");
   };
 
   const handleSignUp = async (email, password) => {
