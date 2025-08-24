@@ -7,6 +7,54 @@ const DIFF_MAP = {
   hell: "Hell",
 };
 
+export async function upsertBattleSubmission(payload) {
+  const { data, error } = await supabase
+    .from("battle_submissions")
+    .upsert(payload, { onConflict: "battle_id,user_id" })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function getBattleSubmissions(battleId) {
+  const { data, error } = await supabase
+    .from("battle_submissions")
+    .select("*")
+    .eq("battle_id", battleId);
+  if (error) throw error;
+  return data || [];
+}
+
+export async function addProfileScoreOnce(userId, delta, key) {
+  const { data, error } = await supabase.rpc("add_profile_score_once", {
+    p_user: userId,
+    p_delta: delta,
+    p_key: key
+  });
+  if (error) throw error;
+  return data === true;
+}
+
+export async function getQuestionWithTests(questionId) {
+  const { data, error } = await supabase
+    .from("questions")
+    .select("id,title,description,InitialValue,tests")
+    .eq("id", questionId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) throw new Error("question not found");
+  return {
+    question: {
+      id: data.id,
+      title: data.title || "",
+      description: data.description || "",
+      initialValue: data.InitialValue || ""
+    },
+    tests: Array.isArray(data.tests) ? data.tests : []
+  };
+}
+
 export async function getLeaderboardProfiles() {
   const { data, error } = await supabase
     .from("profiles")

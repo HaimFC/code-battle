@@ -37,19 +37,16 @@ function BattleListPage() {
       pollRef.current = null;
     }
     if (channelRef.current) {
-      supabase.removeChannel(channelRef.current);
+      await supabase.removeChannel(channelRef.current);
       channelRef.current = null;
     }
     if (leave && user?.id) {
-      try {
-        await leaveQueue(user.id);
-      } catch {}
+      try { await leaveQueue(user.id); } catch {}
     }
   }
 
   function startRealtimeWatch() {
     if (channelRef.current || !user?.id) return;
-
     channelRef.current = supabase
       .channel(`ab-watch-${user.id}`)
       .on(
@@ -57,9 +54,9 @@ function BattleListPage() {
         { event: "INSERT", schema: "public", table: "active_battles" },
         (payload) => {
           const row = payload.new;
+          if (!row) return;
           if (row.user_a === user.id || row.user_b === user.id) {
-            cleanup(true);
-            navigate(`/battle/${row.id}`);
+            cleanup(true).then(() => navigate(`/battle/${row.id}`));
           }
         }
       )
@@ -82,7 +79,6 @@ function BattleListPage() {
         navigate(`/battle/${res.battleId}`);
         return;
       }
-
       pollRef.current = window.setInterval(async () => {
         try {
           const tryAgain = await enqueueAndMatch(user.id, onModes);
@@ -92,8 +88,7 @@ function BattleListPage() {
           }
         } catch {}
       }, 5000);
-    } catch (e) {
-      console.error(e);
+    } catch {
       setSearching(false);
       setLoadingModes(new Set());
       await cleanup(true);

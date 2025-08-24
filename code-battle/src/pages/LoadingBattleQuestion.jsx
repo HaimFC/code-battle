@@ -1,92 +1,70 @@
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router";
-import { useAuthContext } from "../context/AuthContext";
 import { supabase } from "../api/supabaseClient";
-import { Center, Loader, Alert } from "@mantine/core";
 import BattlePage from "./BattlePage";
 
-function nameFromProfile(p) {
-  const full = [p?.first_name, p?.last_name].filter(Boolean).join(" ");
-  return p?.display_name || full || "Player";
-}
-
 export default function LoadingBattleQuestion() {
-  const { user, loading } = useAuthContext();
   const { battleId } = useParams();
-  const navigate = useNavigate();
+  const [ready, setReady] = useState(false);
   const [question, setQuestion] = useState(null);
   const [players, setPlayers] = useState([]);
-  const [error, setError] = useState("");
 
   useEffect(() => {
-    if (loading) return;
-    if (!user) {
-      navigate("/login", { replace: true });
-      return;
-    }
-    if (!battleId) {
-      navigate("/battle", { replace: true });
-      return;
-    }
-
+    let active = true;
     (async () => {
-      try {
-        const { data: b, error: bErr } = await supabase
-          .from("active_battles")
-          .select("id,status,question_id,user_a,user_b")
-          .eq("id", battleId)
-          .single();
-        if (bErr) throw bErr;
+      const { data: battle, error: e1 } = await supabase
+        .from("active_battles")
+        .select("id,status,question_id,user_a,user_b")
+        .eq("id", Number(battleId))
+        .maybeSingle();
 
-        const { data: q, error: qErr } = await supabase
-          .from("questions")
-          .select("id,title,description,initialValue:InitialValue")
-          .eq("id", b.question_id)
-          .single();
-        if (qErr) throw qErr;
-
-        const { data: profs, error: pErr } = await supabase
-          .from("profiles")
-          .select("id,display_name,first_name,last_name")
-          .in("id", [b.user_a, b.user_b]);
-        if (pErr) throw pErr;
-
-        const map = new Map(profs.map((p) => [p.id, p]));
-        const ordered = user.id === b.user_a ? [b.user_a, b.user_b] : [b.user_b, b.user_a];
-
-        setPlayers([
-          { name: nameFromProfile(map.get(ordered[0])) || "You", status: "Coding..." },
-          { name: nameFromProfile(map.get(ordered[1])) || "Opponent", status: "Coding..." },
-        ]);
-
-        setQuestion({
-          id: q.id,
-          title: q.title || "",
-          description: q.description || "",
-          initialValue: q.initialValue || "",
-          difficulty: "",
-        });
-      } catch (e) {
-        setError(e?.message || "Failed to load battle");
+      if (e1 || !battle || !active) {
+        setReady(true);
+        return;
       }
+
+      const { data: q, error: e2 } = await supabase
+        .from("questions")
+        .select("id,title,description,InitialValue")
+        .eq("id", battle.question_id)
+        .maybeSingle();
+
+      if (e2 || !q || !active) {
+        setReady(true);
+        return;
+      }
+
+      const ids = [battle.user_a, battle.user_b].filter(Boolean);
+      let profiles = [];
+      if (ids.length) {
+        const { data: profs } = await supabase
+          .from("profiles")
+          .select("id, display_name, first_name, last_name")
+          .in("id", ids);
+        profiles = (profs || []).map(p => ({
+          id: p.id,
+          name: p.display_name || [p.first_name, p.last_name].filter(Boolean).join(" ") || "Player"
+        }));
+      }
+
+      const pA = profiles.find(p => p.id === battle.user_a) || { name: "Player 1", status: "Ready" };
+      const pB = profiles.find(p => p.id === battle.user_b) || { name: "Player 2", status: "Ready" };
+
+      setPlayers([pA, pB]);
+      setQuestion({
+        id: q.id,
+        title: q.title || "",
+        description: q.description || "",
+        initialValue: q.InitialValue || ""
+      });
+      setReady(true);
     })();
-  }, [battleId, user, loading, navigate]);
+    return () => { active = false; };
+  }, [battleId]);
 
-  if (loading || (!question && !error)) {
-    return (
-      <Center h={300}>
-        <Loader />
-      </Center>
-    );
-  }
+  if (!ready || !question) return null;
 
-  if (error) {
-    return (
-      <Center h={300}>
-        <Alert color="red">{error}</Alert>
-      </Center>
-    );
-  }
-
-  return <BattlePage comp={true} players={players} question={question} />;
+  return (
+    <BattlePage comp={true} players={players} question={question} />
+  );
 }
