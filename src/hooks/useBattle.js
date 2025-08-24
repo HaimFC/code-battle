@@ -1,0 +1,1 @@
+// Hook to handle battle join/start/finish actions.

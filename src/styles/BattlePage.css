@@ -1,0 +1,214 @@
+.battle-shell {
+  display: flex;
+  flex-direction: column;
+  background: #0f172a;
+  color: #ffffff;
+  overflow: hidden;
+}
+
+.battle-header {
+  padding: 16px 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.screen-timer {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+  font-size: 14px;
+  padding: 0px;
+}
+
+.battle-page {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 24px;
+  flex: 1 1 auto;
+  padding: 0 24px 24px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.left-panel,
+.right-panel {
+  background: #111827;
+  border: 1px solid #1f2a44;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.players-card {
+  background: #0b1220;
+  border: 1px solid #1f2a44;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 96px;
+}
+
+.p-slot {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.p-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  line-height: 1.2;
+}
+
+.p-info :last-child {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.vs {
+  font-weight: 800;
+  opacity: 0.7;
+  letter-spacing: 1px;
+}
+
+.question {
+  background: #0b1220;
+  border: 1px solid #1f2a44;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+  min-height: 600px;
+}
+
+.code {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.editor {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.editor .mantine-Textarea-input,
+.editor .cm-editor,
+.editor .monaco-editor {
+  flex: 1 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0;
+  border-radius: 12px !important;
+  /* border: 1px solid #1f2a44 !important; */
+  background: #0a1020 !important;
+  color: #e5e7eb !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  font-size: 15px;
+}
+
+.code-actions .mantine-Button-root,
+.code .mantine-Button-root {
+  height: 44px;
+  font-weight: 700;
+  border-radius: 12px;
+}
+
+.right-panel .mantine-Button-root {
+  height: 52px;
+  font-weight: 700;
+  border-radius: 12px;
+}
+
+.panel-section {
+  background: #0b1220;
+  border: 1px solid #1f2a44;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  overflow: hidden;
+  flex: 1 1 0;
+}
+
+.section-title {
+  color: #cbd5e1;
+  font-weight: 700;
+}
+
+.section-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid #1f2a44;
+  border-radius: 12px;
+  background-color: #0a1020;
+  padding: 16px;
+  color: #e5e7eb;
+  scrollbar-width: thin;
+}
+
+.section-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.section-content::-webkit-scrollbar-thumb {
+  background: #1f2a44;
+  border-radius: 8px;
+}
+
+.description {
+  white-space: pre-wrap;
+  direction: ltr;
+  text-align: left;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.output {
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.right-panel .panel-section:first-of-type {
+  flex: 1 1 0;
+  min-height: 300px;
+}
+
+.right-panel .panel-section:last-of-type {
+  flex: 0 0 28%;
+  min-height: 300px;
+}
+
+@media (max-width: 1100px) {
+  .battle-page {
+    grid-template-columns: 1fr;
+    min-height: 100vh;
+    padding: 0 16px 16px;
+  }
+}

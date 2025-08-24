@@ -1,0 +1,1 @@
+// Hook for Supabase Realtime subscriptions (updates in live battles).
