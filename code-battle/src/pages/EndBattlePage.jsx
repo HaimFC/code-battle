@@ -10,8 +10,9 @@ import {
   Badge,
   Progress,
   Grid,
+  Button,
 } from "@mantine/core";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "../api/supabaseClient";
 import {
   estimateTimeComplexityFromCode,
@@ -183,145 +184,158 @@ export default function EndBattlePage() {
       .catch(() => {});
   }, [user?.id, myScore, sid, awarded]);
 
+  const navigate = useNavigate();
+
+  function backToHome() {
+    navigate("/");
+  }
+
   return (
-    <Container size="lg" py="lg">
-      <Stack gap="md">
-        <Group justify="space-between" align="center">
-          <Title order={3} style={{ margin: 0 }}>
-            {question?.title || "Result"}
-          </Title>
-          <Badge color="green" variant="light">
-            {winnerIsMe ? "Winner: You" : "Winner: Opponent"}
-          </Badge>
-        </Group>
+    <>
+      <Container size="lg" py="lg">
+        <Stack gap="md">
+          <Group justify="space-between" align="center">
+            <Title order={3} style={{ margin: 0 }}>
+              {question?.title || "Result"}
+            </Title>
+            <Badge color="green" variant="light">
+              {winnerIsMe ? "Winner: You" : "Winner: Opponent"}
+            </Badge>
+          </Group>
 
-        <Card radius="lg" withBorder p="lg">
-          <Stack gap="sm">
-            <Title order={5}>Your Summary</Title>
-            <Grid>
-              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                <Text size="sm" c="dimmed">
-                  Time
-                </Text>
-                <Text fw={600}>{msToHMS(elapsedMs || 0)}</Text>
-              </Grid.Col>
-              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                <Text size="sm" c="dimmed">
-                  Tests
-                </Text>
-                <Text fw={600}>
-                  {summary?.passed ?? 0} of {summary?.total ?? 0}
-                </Text>
-                <Progress value={passedPct} mt={6} />
-              </Grid.Col>
-              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                <Stack gap="xs" align="center">
+          <Card radius="lg" withBorder p="lg">
+            <Stack gap="sm">
+              <Title order={5}>Your Summary</Title>
+              <Grid>
+                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                   <Text size="sm" c="dimmed">
-                    Time Complexity
+                    Time
                   </Text>
-                  <Group gap="xs" justify="center">
-                    <Badge variant="light" color="blue">
-                      {safeTime || "N/A"}
-                    </Badge>
-                    <Text size="sm">Best {qMeta.timeBest || "-"}</Text>
-                  </Group>
-                </Stack>
-              </Grid.Col>
-              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                <Stack gap="xs" align="center">
+                  <Text fw={600}>{msToHMS(elapsedMs || 0)}</Text>
+                </Grid.Col>
+                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                   <Text size="sm" c="dimmed">
-                    Space Complexity
+                    Tests
                   </Text>
-                  <Group gap="xs" justify="center">
-                    <Badge variant="light" color="violet">
-                      {safeSpace || "N/A"}
-                    </Badge>
-                    <Text size="sm">Best {qMeta.spaceBest || "-"}</Text>
-                  </Group>
-                </Stack>
-              </Grid.Col>
-            </Grid>
-          </Stack>
-        </Card>
+                  <Text fw={600}>
+                    {summary?.passed ?? 0} of {summary?.total ?? 0}
+                  </Text>
+                  <Progress value={passedPct} mt={6} />
+                </Grid.Col>
+                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                  <Stack gap="xs" align="center">
+                    <Text size="sm" c="dimmed">
+                      Time Complexity
+                    </Text>
+                    <Group gap="xs" justify="center">
+                      <Badge variant="light" color="blue">
+                        {safeTime || "N/A"}
+                      </Badge>
+                      <Text size="sm">Best {qMeta.timeBest || "-"}</Text>
+                    </Group>
+                  </Stack>
+                </Grid.Col>
+                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                  <Stack gap="xs" align="center">
+                    <Text size="sm" c="dimmed">
+                      Space Complexity
+                    </Text>
+                    <Group gap="xs" justify="center">
+                      <Badge variant="light" color="violet">
+                        {safeSpace || "N/A"}
+                      </Badge>
+                      <Text size="sm">Best {qMeta.spaceBest || "-"}</Text>
+                    </Group>
+                  </Stack>
+                </Grid.Col>
+              </Grid>
+            </Stack>
+          </Card>
 
-        <Card radius="lg" withBorder p="lg">
-          <Stack gap="sm">
-            <Title order={5}>Your Code</Title>
-            <Card withBorder radius="md" p="md">
-              <pre style={{ overflowX: "auto" }}>{code || ""}</pre>
-            </Card>
-          </Stack>
-        </Card>
+          <Card radius="lg" withBorder p="lg">
+            <Stack gap="sm">
+              <Title order={5}>Your Code</Title>
+              <Card withBorder radius="md" p="md">
+                <pre style={{ overflowX: "auto" }}>{code || ""}</pre>
+              </Card>
+            </Stack>
+          </Card>
 
-        <Card radius="lg" withBorder p="lg">
-          <Stack gap="sm">
-            <Title order={5}>Opponent Summary</Title>
-            <Grid>
-              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                <Text size="sm" c="dimmed">
-                  Time
-                </Text>
-                <Text fw={600}>{msToHMS(oppRow?.elapsed_ms || 0)}</Text>
-              </Grid.Col>
-              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                <Text size="sm" c="dimmed">
-                  Tests
-                </Text>
-                <Text fw={600}>
-                  {oppRow?.summary?.passed ?? 0} of{" "}
-                  {oppRow?.summary?.total ?? 0}
-                </Text>
-                <Progress
-                  value={
-                    oppRow?.summary?.total
-                      ? Math.round(
-                          (oppRow.summary.passed / oppRow.summary.total) * 100
-                        )
-                      : 0
-                  }
-                  mt={6}
-                />
-              </Grid.Col>
-              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                <Stack gap="xs" align="center">
+          <Card radius="lg" withBorder p="lg">
+            <Stack gap="sm">
+              <Title order={5}>Opponent Summary</Title>
+              <Grid>
+                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                   <Text size="sm" c="dimmed">
-                    Time Complexity
+                    Time
                   </Text>
-                  <Group gap="xs" justify="center">
-                    <Badge variant="light" color="blue">
-                      {oppRow?.time_label || "N/A"}
-                    </Badge>
-                  </Group>
-                </Stack>
-              </Grid.Col>
-              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                <Stack gap="xs" align="center">
+                  <Text fw={600}>{msToHMS(oppRow?.elapsed_ms || 0)}</Text>
+                </Grid.Col>
+                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                   <Text size="sm" c="dimmed">
-                    Space Complexity
+                    Tests
                   </Text>
-                  <Group gap="xs" justify="center">
-                    <Badge variant="light" color="violet">
-                      {oppRow?.space_label || "N/A"}
-                    </Badge>
-                  </Group>
-                </Stack>
-              </Grid.Col>
-            </Grid>
-          </Stack>
-        </Card>
+                  <Text fw={600}>
+                    {oppRow?.summary?.passed ?? 0} of{" "}
+                    {oppRow?.summary?.total ?? 0}
+                  </Text>
+                  <Progress
+                    value={
+                      oppRow?.summary?.total
+                        ? Math.round(
+                            (oppRow.summary.passed / oppRow.summary.total) * 100
+                          )
+                        : 0
+                    }
+                    mt={6}
+                  />
+                </Grid.Col>
+                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                  <Stack gap="xs" align="center">
+                    <Text size="sm" c="dimmed">
+                      Time Complexity
+                    </Text>
+                    <Group gap="xs" justify="center">
+                      <Badge variant="light" color="blue">
+                        {oppRow?.time_label || "N/A"}
+                      </Badge>
+                    </Group>
+                  </Stack>
+                </Grid.Col>
+                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                  <Stack gap="xs" align="center">
+                    <Text size="sm" c="dimmed">
+                      Space Complexity
+                    </Text>
+                    <Group gap="xs" justify="center">
+                      <Badge variant="light" color="violet">
+                        {oppRow?.space_label || "N/A"}
+                      </Badge>
+                    </Group>
+                  </Stack>
+                </Grid.Col>
+              </Grid>
+            </Stack>
+          </Card>
 
-        <Card radius="lg" withBorder p="lg">
-          <Stack gap="xs">
-            <Title order={5}>Score</Title>
-            <Group justify="space-between">
-              <Text>You: {myScore}</Text>
-              <Text>Opponent: {oppScore}</Text>
-            </Group>
-            <Divider my="sm" />
-            <Title order={2}>{winnerIsMe ? "You Win" : "Opponent Wins"}</Title>
-          </Stack>
-        </Card>
-      </Stack>
-    </Container>
+          <Card radius="lg" withBorder p="lg">
+            <Stack gap="xs">
+              <Title order={5}>Score</Title>
+              <Group justify="space-between">
+                <Text>You: {myScore}</Text>
+                <Text>Opponent: {oppScore}</Text>
+              </Group>
+              <Divider my="sm" />
+              <Title order={2}>
+                {winnerIsMe ? "You Win" : "Opponent Wins"}
+              </Title>
+            </Stack>
+          </Card>
+        </Stack>
+      </Container>
+      <Button w={100} onClick={backToHome}>
+        Back
+      </Button>
+    </>
   );
 }

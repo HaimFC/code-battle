@@ -10,8 +10,9 @@ import {
   Badge,
   Progress,
   Grid,
+  Button,
 } from "@mantine/core";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "../api/supabaseClient";
 import {
   estimateTimeComplexityFromCode,
@@ -157,116 +158,127 @@ export default function EndPracticePage() {
       .catch(() => {});
   }, [user?.id, sid, finalScore, awarded]);
 
+  const navigate = useNavigate();
+
+  function backToHome() {
+    navigate("/");
+  }
+
   return (
-    <Container size="lg" py="lg">
-      <Stack gap="md">
-        <Group justify="space-between" align="center">
-          <Title order={3} style={{ margin: 0 }}>
-            {question?.title || "Result"}
-          </Title>
-          <Badge color="green" variant="light">
-            Score {finalScore}
-          </Badge>
-        </Group>
+    <>
+      <Container size="lg" py="lg">
+        <Stack gap="md">
+          <Group justify="space-between" align="center">
+            <Title order={3} style={{ margin: 0 }}>
+              {question?.title || "Result"}
+            </Title>
+            <Badge color="green" variant="light">
+              Score {finalScore}
+            </Badge>
+          </Group>
 
-        <Card radius="lg" withBorder p="lg">
-          <Stack gap="sm">
-            <Title order={5}>Summary</Title>
-            <Grid>
-              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                <Text size="sm" c="dimmed">
-                  Time
-                </Text>
-                <Text fw={600}>{msToHMS(elapsedMs || 0)}</Text>
-              </Grid.Col>
-              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                <Text size="sm" c="dimmed">
-                  Tests
-                </Text>
-                <Text fw={600}>
-                  {summary?.passed ?? 0} of {summary?.total ?? 0}
-                </Text>
-                <Progress value={passedPct} mt={6} />
-              </Grid.Col>
-              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                <Stack gap="xs" align="center">
+          <Card radius="lg" withBorder p="lg">
+            <Stack gap="sm">
+              <Title order={5}>Summary</Title>
+              <Grid>
+                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                   <Text size="sm" c="dimmed">
-                    Time Complexity
+                    Time
                   </Text>
-                  <Group gap="xs" justify="center">
-                    <Badge variant="light" color="blue">
-                      {safeTime || "N/A"}
-                    </Badge>
-                    <Text size="sm">Best {qMeta.timeBest || "-"}</Text>
-                  </Group>
-                </Stack>
-              </Grid.Col>
-              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                <Stack gap="xs" align="center">
+                  <Text fw={600}>{msToHMS(elapsedMs || 0)}</Text>
+                </Grid.Col>
+                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                   <Text size="sm" c="dimmed">
-                    Space Complexity
+                    Tests
                   </Text>
-                  <Group gap="xs" justify="center">
-                    <Badge variant="light" color="violet">
-                      {safeSpace || "N/A"}
-                    </Badge>
-                    <Text size="sm">Best {qMeta.spaceBest || "-"}</Text>
-                  </Group>
-                </Stack>
-              </Grid.Col>
-            </Grid>
-          </Stack>
-        </Card>
-
-        <Card radius="lg" withBorder p="lg">
-          <Stack gap="sm">
-            <Title order={5}>Code</Title>
-            <Card withBorder radius="md" p="md">
-              <pre
-                style={{
-                  textAlign: "left",
-                  overflowX: "auto",
-                  margin: "0 auto",
-                  padding: "20px",
-                  width: "max-content",
-                }}
-              >
-                {code || ""}
-              </pre>
-            </Card>
-          </Stack>
-        </Card>
-
-        <Card radius="lg" withBorder p="lg">
-          <Stack gap="sm">
-            <Title order={5}>Test Results</Title>
-            <Stack gap={6}>
-              {(results || []).slice(0, 100).map((r) => (
-                <Group key={r.i} justify="space-between">
-                  <Text size="sm">Test #{r.i}</Text>
-                  <Badge color={r.passed ? "green" : "red"} variant="light">
-                    {r.passed ? "Passed" : "Failed"}
-                  </Badge>
-                  <Text size="sm" c="dimmed">
-                    {r.time_ms}ms
+                  <Text fw={600}>
+                    {summary?.passed ?? 0} of {summary?.total ?? 0}
                   </Text>
-                </Group>
-              ))}
+                  <Progress value={passedPct} mt={6} />
+                </Grid.Col>
+                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                  <Stack gap="xs" align="center">
+                    <Text size="sm" c="dimmed">
+                      Time Complexity
+                    </Text>
+                    <Group gap="xs" justify="center">
+                      <Badge variant="light" color="blue">
+                        {safeTime || "N/A"}
+                      </Badge>
+                      <Text size="sm">Best {qMeta.timeBest || "-"}</Text>
+                    </Group>
+                  </Stack>
+                </Grid.Col>
+                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                  <Stack gap="xs" align="center">
+                    <Text size="sm" c="dimmed">
+                      Space Complexity
+                    </Text>
+                    <Group gap="xs" justify="center">
+                      <Badge variant="light" color="violet">
+                        {safeSpace || "N/A"}
+                      </Badge>
+                      <Text size="sm">Best {qMeta.spaceBest || "-"}</Text>
+                    </Group>
+                  </Stack>
+                </Grid.Col>
+              </Grid>
             </Stack>
-          </Stack>
-        </Card>
+          </Card>
 
-        <Card radius="lg" withBorder p="lg">
-          <Stack gap="xs">
-            <Title order={5}>Score Breakdown</Title>
-            <Text>Tests: {Math.round(testsScore)}/50</Text>
-            <Text>Time Complexity: {Math.round(timeScore)}/25</Text>
-            <Text>Space Complexity: {Math.round(spaceScore)}/25</Text>
-            <Divider my="sm" />
-            <Title order={2}>{finalScore}</Title>
-          </Stack>
-        </Card>
-      </Stack>
-    </Container>
+          <Card radius="lg" withBorder p="lg">
+            <Stack gap="sm">
+              <Title order={5}>Code</Title>
+              <Card withBorder radius="md" p="md">
+                <pre
+                  style={{
+                    textAlign: "left",
+                    overflowX: "auto",
+                    margin: "0 auto",
+                    padding: "20px",
+                    width: "max-content",
+                  }}
+                >
+                  {code || ""}
+                </pre>
+              </Card>
+            </Stack>
+          </Card>
+
+          <Card radius="lg" withBorder p="lg">
+            <Stack gap="sm">
+              <Title order={5}>Test Results</Title>
+              <Stack gap={6}>
+                {(results || []).slice(0, 100).map((r) => (
+                  <Group key={r.i} justify="space-between">
+                    <Text size="sm">Test #{r.i}</Text>
+                    <Badge color={r.passed ? "green" : "red"} variant="light">
+                      {r.passed ? "Passed" : "Failed"}
+                    </Badge>
+                    <Text size="sm" c="dimmed">
+                      {r.time_ms}ms
+                    </Text>
+                  </Group>
+                ))}
+              </Stack>
+            </Stack>
+          </Card>
+
+          <Card radius="lg" withBorder p="lg">
+            <Stack gap="xs">
+              <Title order={5}>Score Breakdown</Title>
+              <Text>Tests: {Math.round(testsScore)}/50</Text>
+              <Text>Time Complexity: {Math.round(timeScore)}/25</Text>
+              <Text>Space Complexity: {Math.round(spaceScore)}/25</Text>
+              <Divider my="sm" />
+              <Title order={2}>{finalScore}</Title>
+            </Stack>
+          </Card>
+        </Stack>
+      </Container>
+      <Button w={100} onClick={backToHome}>
+        Back
+      </Button>
+    </>
   );
 }
