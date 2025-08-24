@@ -9,7 +9,7 @@ import { BrowserRouter } from "react-router-dom";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <MantineProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/code-battle">
         <App />
       </BrowserRouter>
     </MantineProvider>
