@@ -315,6 +315,10 @@ function BattlePage({ comp, players = [], question }) {
   };
 
   const handleQuit = async () => {
+    if (!comp) {
+      navigate("/");
+    }
+
     const doSomething = true;
 
     if (!doSomething) {
@@ -347,7 +351,7 @@ function BattlePage({ comp, players = [], question }) {
         left={"25px"}
         w={100}
         bg={"#d11a2a"}
-        onClick={() => handleQuit(user_id, battle_id)}
+        onClick={handleQuit}
       >
         Quit
       </Button>
