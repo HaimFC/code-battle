@@ -37,7 +37,7 @@ export default function LoginPage() {
               await signIn(values.email, values.password);
               navigate("/");
             } catch (err) {
-              alert("Error " + err.message);
+              alert("Error: " + err.message);
             }
           })}
         >
