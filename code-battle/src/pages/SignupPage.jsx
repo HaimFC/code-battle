@@ -1,10 +1,19 @@
 // pages/SignUpPage.jsx
 import { useAuthContext } from "../context/AuthContext";
-import { Button, TextInput, PasswordInput } from "@mantine/core";
+import {
+  Button,
+  TextInput,
+  PasswordInput,
+  Card,
+  Container,
+  Stack,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useNavigate } from "react-router";
 
 export default function SignUpPage() {
   const { signUp } = useAuthContext();
+  const navigate = useNavigate();
 
   const form = useForm({
     mode: "uncontrolled",
@@ -27,58 +36,69 @@ export default function SignUpPage() {
   });
 
   return (
-    <form
-      style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxWidth: 360 }}
-      onSubmit={form.onSubmit(async (values) => {
-        try {
-          await signUp({
-            email: values.email,
-            password: values.password,
-            displayName: values.displayName,
-            firstName: values.firstName,
-            lastName: values.lastName,
-            phone: values.phone,
-          });
-          alert("Account Created Successfully");
-        } catch (err) {
-          alert("Error " + (err?.message || "Unknown"));
-        }
-      })}
-    >
-      <TextInput
-        withAsterisk
-        placeholder="Email"
-        key={form.key("email")}
-        {...form.getInputProps("email")}
-      />
-      <PasswordInput
-        withAsterisk
-        placeholder="Password"
-        key={form.key("password")}
-        {...form.getInputProps("password")}
-      />
-      <TextInput
-        withAsterisk
-        placeholder="Nick name"
-        key={form.key("displayName")}
-        {...form.getInputProps("displayName")}
-      />
-      <TextInput
-        placeholder="First name"
-        key={form.key("firstName")}
-        {...form.getInputProps("firstName")}
-      />
-      <TextInput
-        placeholder="Last name"
-        key={form.key("lastName")}
-        {...form.getInputProps("lastName")}
-      />
-      <TextInput
-        placeholder="Phone"
-        key={form.key("phone")}
-        {...form.getInputProps("phone")}
-      />
-      <Button type="submit">Create Account</Button>
-    </form>
+    <Container size={"390px"}>
+      <Card radius={"10px"}>
+        <form
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.5rem",
+            maxWidth: 360,
+          }}
+          onSubmit={form.onSubmit(async (values) => {
+            try {
+              await signUp({
+                email: values.email,
+                password: values.password,
+                displayName: values.displayName,
+                firstName: values.firstName,
+                lastName: values.lastName,
+                phone: values.phone,
+              });
+              navigate("/login");
+            } catch (err) {
+              alert("Error " + (err?.message || "Unknown"));
+            }
+          })}
+        >
+          <Stack>
+            <TextInput
+              withAsterisk
+              placeholder="Email"
+              key={form.key("email")}
+              {...form.getInputProps("email")}
+            />
+            <PasswordInput
+              withAsterisk
+              placeholder="Password"
+              key={form.key("password")}
+              {...form.getInputProps("password")}
+            />
+            <TextInput
+              withAsterisk
+              placeholder="Nickname"
+              key={form.key("displayName")}
+              {...form.getInputProps("displayName")}
+            />
+            <TextInput
+              placeholder="First name"
+              key={form.key("firstName")}
+              {...form.getInputProps("firstName")}
+            />
+            <TextInput
+              placeholder="Last name"
+              key={form.key("lastName")}
+              {...form.getInputProps("lastName")}
+            />
+            <TextInput
+              placeholder="Phone"
+              key={form.key("phone")}
+              {...form.getInputProps("phone")}
+            />
+          </Stack>
+          <Button type="submit">Create Account</Button>
+        </form>
+      </Card>
+    </Container>
   );
 }
