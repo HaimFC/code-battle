@@ -36,45 +36,45 @@ function App() {
 
   function handleSelectMode() {
     if (battleID) {
-      navigate(`/code-battle/battle/${battleID}`);
+      navigate(`/battle/${battleID}`);
       return;
     }
     if (mode === "Practice") {
-      navigate("/code-battle/practice");
+      navigate("/practice");
     } else if (mode === "Battle") {
-      navigate("/code-battle/battle");
+      navigate("/battle");
     } else {
-      navigate("/code-battle/");
+      navigate("/");
     }
   }
 
   async function handleStartCoding(activeUser) {
     if (mode === "Practice") {
-      navigate("/code-battle/practice");
+      navigate("/practice");
     } else if (mode === "Battle") {
       const joinedBattle = await joinMockBattle(difficulty);
       if (!joinedBattle) {
         const battle = await postMockBattle(activeUser, difficulty);
         setBattleID(battle);
-        navigate("/code-battle/battle/waiting-room");
+        navigate("/battle/waiting-room");
         return;
       }
-      navigate(`/code-battle/battle/${joinedBattle}`);
+      navigate(`/battle/${joinedBattle}`);
     }
   }
 
   function handleFinishCoding() {
-    navigate("/code-battle/summary");
+    navigate("/summary");
   }
 
   async function handleOpponentFound(foundOpponent) {
     setOpponent(foundOpponent);
-    navigate("/code-battle/battle");
+    navigate("/battle");
   }
 
   async function handleForfeitBattle(activeUser, battleID) {
     if (!battleID) {
-      navigate("/code-battle/");
+      navigate("/");
       return;
     }
     const success = await forfeitMockBattle(activeUser, battleID);
@@ -82,7 +82,7 @@ function App() {
       throw new Error("user quit, but db thinks he is still available");
     }
     setBattleID(null);
-    navigate("/code-battle/");
+    navigate("/");
   }
 
   return (
@@ -92,7 +92,7 @@ function App() {
           <Layout>
             <Routes>
               <Route
-                path="/code-battle/"
+                path="/"
                 element={
                   <HomePage
                     handleSelectMode={handleSelectMode}
@@ -102,16 +102,13 @@ function App() {
                   />
                 }
               />
-              <Route path="/code-battle/login" element={<LoginPage />} />
-              <Route path="/code-battle/signup" element={<SignUpPage />} />
-              <Route
-                path="/code-battle/leaderboard"
-                element={<LeaderboardPage />}
-              />
-              <Route path="/code-battle/help" element={<HelpPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignUpPage />} />
+              <Route path="/leaderboard" element={<LeaderboardPage />} />
+              <Route path="/help" element={<HelpPage />} />
 
               <Route
-                path="/code-battle/practice"
+                path="/practice"
                 element={
                   <ProtectedRoute>
                     <PracticePickPage />
@@ -119,7 +116,7 @@ function App() {
                 }
               />
               <Route
-                path="/code-battle/practice/:difficulty"
+                path="/practice/:difficulty"
                 element={
                   <ProtectedRoute>
                     <LoadingPracticeQuestion />
@@ -128,7 +125,7 @@ function App() {
               />
 
               <Route
-                path="/code-battle/battle"
+                path="/battle"
                 element={
                   <ProtectedRoute>
                     <BattleListPage />
@@ -136,7 +133,7 @@ function App() {
                 }
               />
               <Route
-                path="/code-battle/battle/waiting-room"
+                path="/battle/waiting-room"
                 element={
                   <ProtectedRoute>
                     <WaitingRoomPage
@@ -147,7 +144,7 @@ function App() {
                 }
               />
               <Route
-                path="/code-battle/battle/:battleId"
+                path="/battle/:battleId"
                 element={
                   <ProtectedRoute>
                     <BattlePage comp />
@@ -156,7 +153,7 @@ function App() {
               />
 
               <Route
-                path="/code-battle/end-practice"
+                path="/end-practice"
                 element={
                   <ProtectedRoute>
                     <EndPracticePage />
@@ -164,7 +161,7 @@ function App() {
                 }
               />
               <Route
-                path="/code-battle/end-battle"
+                path="/end-battle"
                 element={
                   <ProtectedRoute>
                     <EndBattlePage />
@@ -173,7 +170,7 @@ function App() {
               />
 
               <Route
-                path="/code-battle/profile"
+                path="/profile"
                 element={
                   <ProtectedRoute>
                     <ProfilePage />
@@ -181,10 +178,7 @@ function App() {
                 }
               />
 
-              <Route
-                path="/code-battle/*"
-                element={<Navigate replace to="/" />}
-              />
+              <Route path="/*" element={<Navigate replace to="/" />} />
             </Routes>
           </Layout>
         )}
@@ -192,4 +186,5 @@ function App() {
     </>
   );
 }
+
 export default App;
