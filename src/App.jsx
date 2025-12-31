@@ -183,7 +183,7 @@ function App() {
 
               <Route
                 path="/code-battle/*"
-                element={<Navigate replace to="/" />}
+                element={<Navigate replace to="/code-battle" />}
               />
             </Routes>
           </Layout>
