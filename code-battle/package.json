@@ -2,6 +2,7 @@
   "name": "code-battle",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://HaimFC.github.io/code-battle",
   "type": "module",
   "scripts": {
     "predeploy": "npm run build",
