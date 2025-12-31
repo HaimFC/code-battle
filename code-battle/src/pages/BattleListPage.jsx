@@ -123,7 +123,7 @@ function BattleListPage() {
         {modes.map((mode) => (
           <BattleModeCard
             key={mode}
-            img={`/images/${mode}.png`}
+            img={`https://www.github.com/HaimFC/code-battle/images/${mode}.png`}
             diff={mode}
             checked={onModes.has(mode)}
             loading={loadingModes.has(mode)}

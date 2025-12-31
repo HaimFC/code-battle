@@ -7,6 +7,7 @@ import BattlePage from "./BattlePage";
 import { Center, Loader, Alert } from "@mantine/core";
 
 export default function LoadingPracticeQuestion() {
+  console.log("here?");
   const { difficulty } = useParams();
   const { user } = useAuthContext();
   const [question, setQuestion] = useState(null);
