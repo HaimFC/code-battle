@@ -1,7 +1,7 @@
 {
   "name": "code-battle",
   "private": true,
-  "homepage": "https://HaimFC.github.io/code-battle",
+  "homepage": "https://HaimFC.github.io/code-battle/outer",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
